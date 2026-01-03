@@ -787,9 +787,53 @@ struct LSYSTEMTREES_API FTurtleConfig
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turtle|Leaves")
 	FVector2D LeafSize;
 
-	/** Random seed for reproducible results */
+	/** Random seed for reproducible results (0 = random each time) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turtle|Random")
 	int32 RandomSeed;
+
+	/** Probability of a branch being created (0.0 = never, 1.0 = always) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turtle|Random",
+		meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	float BranchProbability;
+
+	/** Minimum random angle variation to add to rotations (degrees) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turtle|Random",
+		meta = (ClampMin = "-90", ClampMax = "90", UIMin = "-45", UIMax = "0"))
+	float AngleVariationMin;
+
+	/** Maximum random angle variation to add to rotations (degrees) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turtle|Random",
+		meta = (ClampMin = "-90", ClampMax = "90", UIMin = "0", UIMax = "45"))
+	float AngleVariationMax;
+
+	/** Random variation in step length (0.0 = no variation, 1.0 = +/- 100%) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turtle|Random",
+		meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "0.5"))
+	float StepLengthVariation;
+
+	/** Randomly flip pitch direction (some branches go up, some go down) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turtle|Random")
+	bool bRandomizePitchDirection;
+
+	/** Probability of flipping pitch direction when bRandomizePitchDirection is true (0.5 = 50% chance) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turtle|Random",
+		meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1", EditCondition = "bRandomizePitchDirection"))
+	float PitchFlipProbability;
+
+	/** Minimum pitch variation (independent from yaw angle variation) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turtle|Random",
+		meta = (ClampMin = "-90", ClampMax = "90", UIMin = "-30", UIMax = "0"))
+	float PitchVariationMin;
+
+	/** Maximum pitch variation (independent from yaw angle variation) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turtle|Random",
+		meta = (ClampMin = "-90", ClampMax = "90", UIMin = "0", UIMax = "30"))
+	float PitchVariationMax;
+
+	/** Random roll applied at initialization (degrees, 0 = no random roll) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turtle|Random",
+		meta = (ClampMin = "0", ClampMax = "360", UIMin = "0", UIMax = "360"))
+	float InitialRandomRoll;
 
 	/** Default constructor */
 	FTurtleConfig()
@@ -806,6 +850,15 @@ struct LSYSTEMTREES_API FTurtleConfig
 		, InitialForward(FVector::UpVector)
 		, LeafSize(10.0f, 15.0f)
 		, RandomSeed(0)
+		, BranchProbability(1.0f)
+		, AngleVariationMin(-10.0f)
+		, AngleVariationMax(10.0f)
+		, StepLengthVariation(0.2f)
+		, bRandomizePitchDirection(false)
+		, PitchFlipProbability(0.5f)
+		, PitchVariationMin(-15.0f)
+		, PitchVariationMax(15.0f)
+		, InitialRandomRoll(0.0f)
 	{
 	}
 };

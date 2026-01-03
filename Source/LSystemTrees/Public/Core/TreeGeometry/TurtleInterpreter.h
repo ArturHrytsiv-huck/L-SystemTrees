@@ -163,6 +163,15 @@ protected:
 	/** Process a single character */
 	void ProcessSymbol(TCHAR Symbol);
 
+	/** Get random angle variation based on config (for yaw) */
+	float GetRandomAngleVariation();
+
+	/** Get random pitch variation based on config (separate from yaw) */
+	float GetRandomPitchVariation();
+
+	/** Check if pitch direction should be flipped */
+	bool ShouldFlipPitch();
+
 private:
 	// ========================================================================
 	// State
@@ -179,6 +188,9 @@ private:
 
 	/** Random stream for reproducibility */
 	FRandomStream RandomStream;
+
+	/** Depth counter for skipping branches due to probability */
+	int32 SkipBranchDepth;
 
 	// ========================================================================
 	// Output

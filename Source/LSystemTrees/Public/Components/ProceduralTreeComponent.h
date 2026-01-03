@@ -78,8 +78,13 @@ public:
 
 	/** Random seed for stochastic rules (0 = random each time) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tree|LSystem",
-		meta = (DisplayName = "Random Seed"))
+		meta = (DisplayName = "Random Seed", EditCondition = "!bUseLocationBasedSeed"))
 	int32 RandomSeed;
+
+	/** Use world location to generate unique seed - each tree instance looks different */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tree|LSystem",
+		meta = (DisplayName = "Use Location-Based Seed"))
+	bool bUseLocationBasedSeed;
 
 	// ========================================================================
 	// Turtle Configuration

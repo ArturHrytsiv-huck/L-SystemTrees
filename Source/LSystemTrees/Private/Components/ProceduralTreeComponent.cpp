@@ -17,6 +17,7 @@ UProceduralTreeComponent::UProceduralTreeComponent(const FObjectInitializer& Obj
 	, Axiom(TEXT("F"))
 	, Iterations(4)
 	, RandomSeed(0)
+	, bUseLocationBasedSeed(true)
 	, bGenerateOnStart(false)
 	, BarkMaterial(nullptr)
 	, LeafMaterial(nullptr)
@@ -74,6 +75,7 @@ void UProceduralTreeComponent::PostEditChangeProperty(FPropertyChangedEvent& Pro
 			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, Rules),
 			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, Iterations),
 			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, RandomSeed),
+			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, bUseLocationBasedSeed),
 			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, TurtleConfig),
 			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, GeometryConfig),
 			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, LODLevels)
@@ -117,6 +119,33 @@ void UProceduralTreeComponent::GenerateTree()
 	CachedLeaves.Empty();
 	CachedLODs.Empty();
 
+	// Compute effective random seed
+	int32 EffectiveSeed = RandomSeed;
+	if (bUseLocationBasedSeed)
+	{
+		// Generate unique seed from world location
+		// This ensures trees at different positions look different
+		const FVector WorldLocation = GetComponentLocation();
+
+		// Hash the location components to create a seed
+		// Multiply by primes and cast to int for good distribution
+		const int32 X = FMath::FloorToInt(WorldLocation.X * 0.1f);
+		const int32 Y = FMath::FloorToInt(WorldLocation.Y * 0.1f);
+		const int32 Z = FMath::FloorToInt(WorldLocation.Z * 0.1f);
+
+		// Combine using prime multipliers for better distribution
+		EffectiveSeed = X * 73856093 ^ Y * 19349663 ^ Z * 83492791;
+
+		// Ensure non-zero seed
+		if (EffectiveSeed == 0)
+		{
+			EffectiveSeed = 1;
+		}
+
+		UE_LOG(LogTemp, Verbose, TEXT("ProceduralTreeComponent: Location-based seed: %d (from %.1f, %.1f, %.1f)"),
+		       EffectiveSeed, WorldLocation.X, WorldLocation.Y, WorldLocation.Z);
+	}
+
 	// Report progress: Step 1 - L-System Generation
 	OnGenerationProgress.Broadcast(1, 4);
 
@@ -131,7 +160,7 @@ void UProceduralTreeComponent::GenerateTree()
 	}
 
 	// Set random seed
-	Generator->SetRandomSeed(RandomSeed);
+	Generator->SetRandomSeed(EffectiveSeed);
 
 	// Generate the string
 	FLSystemGenerationResult GenResult = Generator->Generate(Iterations);
@@ -151,7 +180,7 @@ void UProceduralTreeComponent::GenerateTree()
 
 	// Step 2: Interpret string with turtle
 	FTurtleConfig InterpretConfig = TurtleConfig;
-	InterpretConfig.RandomSeed = RandomSeed;
+	InterpretConfig.RandomSeed = EffectiveSeed;
 	InterpretConfig.LeafSize = GeometryConfig.LeafSize;
 
 	Interpreter->InterpretString(CachedLSystemString, InterpretConfig, CachedSegments, CachedLeaves);
