@@ -1,6 +1,6 @@
 // TestLSystemGenerator.h
 // Test actor for validating L-System generator functionality
-// Part of LSystemTrees Plugin - Phase 2
+// Part of LSystemTrees Plugin - Phase 2 & 3
 
 #pragma once
 
@@ -9,17 +9,27 @@
 #include "Core/LSystem/LSystemGenerator.h"
 #include "TestLSystemGenerator.generated.h"
 
+// Forward declarations
+class UTurtleInterpreter;
+class UTreeGeometry;
+
 /**
  * Test actor for validating L-System generator functionality.
  * Place in a level and call RunAllTests() from Blueprint or C++.
  *
- * Test Categories:
+ * Test Categories (Phase 2):
  *   - Simple Generation: Basic rule application
  *   - Stochastic Generation: Random rule selection
  *   - Context-Sensitive: Context-aware rules
  *   - Edge Cases: Error handling and limits
  *   - Known Patterns: Verified L-System patterns
  *   - Performance: Timing and benchmarks
+ *
+ * Test Categories (Phase 3):
+ *   - Turtle Interpreter: L-System string interpretation
+ *   - Tree Geometry: Mesh generation
+ *   - Tree Math: Utility functions
+ *   - Full Pipeline: End-to-end tree generation
  */
 UCLASS(BlueprintType, Blueprintable, meta = (DisplayName = "L-System Test Actor"))
 class LSYSTEMTREES_API ATestLSystemGenerator : public AActor
@@ -121,6 +131,38 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Testing")
 	bool TestAsyncGeneration();
+
+	// ========================================================================
+	// Phase 3 Test Methods
+	// ========================================================================
+
+	/**
+	 * Test turtle interpreter.
+	 * @return True if turtle interpretation tests passed
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Testing|Phase3")
+	bool TestTurtleInterpreter();
+
+	/**
+	 * Test tree geometry generation.
+	 * @return True if geometry generation tests passed
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Testing|Phase3")
+	bool TestTreeGeometry();
+
+	/**
+	 * Test tree math utilities.
+	 * @return True if math utility tests passed
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Testing|Phase3")
+	bool TestTreeMath();
+
+	/**
+	 * Test full tree generation pipeline.
+	 * @return True if full pipeline tests passed
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Testing|Phase3")
+	bool TestFullPipeline();
 
 protected:
 	virtual void BeginPlay() override;

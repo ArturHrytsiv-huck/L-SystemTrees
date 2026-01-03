@@ -26,11 +26,11 @@ public class LSystemTrees : ModuleRules
 			new string[]
 			{
 				"Core",
-				// ... add other public dependencies that you statically link with here ...
+				"ProceduralMeshComponent",
 			}
 			);
-			
-		
+
+
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
@@ -38,7 +38,8 @@ public class LSystemTrees : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				// ... add private dependencies that you statically link with here ...	
+				"RenderCore",
+				"RHI",
 			}
 			);
 		

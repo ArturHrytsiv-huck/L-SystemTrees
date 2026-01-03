@@ -1,9 +1,12 @@
 // TestLSystemGenerator.cpp
 // Test actor for validating L-System generator functionality
-// Part of LSystemTrees Plugin - Phase 2
+// Part of LSystemTrees Plugin - Phase 2 & 3
 
 #include "Core/LSystem/TestLSystemGenerator.h"
 #include "Core/LSystem/LSystemRule.h"
+#include "Core/TreeGeometry/TurtleInterpreter.h"
+#include "Core/TreeGeometry/TreeGeometry.h"
+#include "Core/Utilities/TreeMath.h"
 
 ATestLSystemGenerator::ATestLSystemGenerator()
 	: bVerboseLogging(true)
@@ -50,6 +53,12 @@ bool ATestLSystemGenerator::RunAllTests()
 	bAllPassed &= TestKnownPatterns();
 	bAllPassed &= TestPerformance();
 	// Note: TestAsyncGeneration() requires async wait, skip in synchronous run
+
+	// Phase 3 Tests
+	bAllPassed &= TestTreeMath();
+	bAllPassed &= TestTurtleInterpreter();
+	bAllPassed &= TestTreeGeometry();
+	bAllPassed &= TestFullPipeline();
 
 	const double EndTime = FPlatformTime::Seconds();
 	TotalTestTimeMs = static_cast<float>((EndTime - StartTime) * 1000.0);
@@ -590,6 +599,475 @@ bool ATestLSystemGenerator::TestAsyncGeneration()
 	Gen->CancelAsyncGeneration();
 
 	return bPassed;
+}
+
+// ============================================================================
+// Phase 3: Turtle Interpreter Tests
+// ============================================================================
+
+bool ATestLSystemGenerator::TestTurtleInterpreter()
+{
+	UE_LOG(LogLSystem, Log, TEXT(""));
+	UE_LOG(LogLSystem, Log, TEXT("--- TestTurtleInterpreter ---"));
+
+	int32 InitialFailed = FailedTests;
+
+	// Test 1: Simple forward movement creates segment
+	{
+		UTurtleInterpreter* Interp = NewObject<UTurtleInterpreter>(this);
+		FTurtleConfig Config;
+		Config.StepLength = 10.0f;
+		Config.InitialWidth = 5.0f;
+
+		TArray<FBranchSegment> Segments;
+		TArray<FLeafData> Leaves;
+
+		Interp->InterpretString(TEXT("F"), Config, Segments, Leaves);
+
+		bool bPassed = Segments.Num() == 1;
+		LogTestResult(TEXT("SingleForward"), bPassed,
+		              FString::Printf(TEXT("Segments: %d"), Segments.Num()));
+	}
+
+	// Test 2: Multiple forwards create multiple segments
+	{
+		UTurtleInterpreter* Interp = NewObject<UTurtleInterpreter>(this);
+		FTurtleConfig Config;
+
+		TArray<FBranchSegment> Segments;
+		TArray<FLeafData> Leaves;
+
+		Interp->InterpretString(TEXT("FFF"), Config, Segments, Leaves);
+
+		bool bPassed = Segments.Num() == 3;
+		LogTestResult(TEXT("MultipleForwards"), bPassed,
+		              FString::Printf(TEXT("Segments: %d"), Segments.Num()));
+	}
+
+	// Test 3: Branching creates correct segments
+	{
+		UTurtleInterpreter* Interp = NewObject<UTurtleInterpreter>(this);
+		FTurtleConfig Config;
+
+		TArray<FBranchSegment> Segments;
+		TArray<FLeafData> Leaves;
+
+		// F[F]F should create: trunk, branch, continuation
+		Interp->InterpretString(TEXT("F[F]F"), Config, Segments, Leaves);
+
+		bool bPassed = Segments.Num() == 3;
+		LogTestResult(TEXT("SimpleBranching"), bPassed,
+		              FString::Printf(TEXT("Segments: %d"), Segments.Num()));
+	}
+
+	// Test 4: Leaf placement
+	{
+		UTurtleInterpreter* Interp = NewObject<UTurtleInterpreter>(this);
+		FTurtleConfig Config;
+
+		TArray<FBranchSegment> Segments;
+		TArray<FLeafData> Leaves;
+
+		Interp->InterpretString(TEXT("FLF"), Config, Segments, Leaves);
+
+		bool bPassed = Leaves.Num() == 1 && Segments.Num() == 2;
+		LogTestResult(TEXT("LeafPlacement"), bPassed,
+		              FString::Printf(TEXT("Segments: %d, Leaves: %d"), Segments.Num(), Leaves.Num()));
+	}
+
+	// Test 5: Rotation affects segment direction
+	{
+		UTurtleInterpreter* Interp = NewObject<UTurtleInterpreter>(this);
+		FTurtleConfig Config;
+		Config.DefaultAngle = 90.0f;
+		Config.StepLength = 10.0f;
+
+		TArray<FBranchSegment> Segments;
+		TArray<FLeafData> Leaves;
+
+		Interp->InterpretString(TEXT("F+F"), Config, Segments, Leaves);
+
+		bool bPassed = Segments.Num() == 2;
+		if (bPassed && Segments.Num() >= 2)
+		{
+			// After 90 degree rotation, directions should be different
+			float DotProduct = FVector::DotProduct(Segments[0].Direction, Segments[1].Direction);
+			bPassed = FMath::Abs(DotProduct) < 0.1f; // Should be ~perpendicular
+		}
+		LogTestResult(TEXT("RotationAffectsDirection"), bPassed);
+	}
+
+	// Test 6: Width falloff in branches
+	{
+		UTurtleInterpreter* Interp = NewObject<UTurtleInterpreter>(this);
+		FTurtleConfig Config;
+		Config.InitialWidth = 10.0f;
+		Config.WidthFalloff = 0.5f;
+
+		TArray<FBranchSegment> Segments;
+		TArray<FLeafData> Leaves;
+
+		Interp->InterpretString(TEXT("F[F]"), Config, Segments, Leaves);
+
+		bool bPassed = Segments.Num() == 2;
+		if (bPassed)
+		{
+			// Branch segment should have smaller width
+			bPassed = Segments[1].StartRadius < Segments[0].StartRadius;
+		}
+		LogTestResult(TEXT("WidthFalloff"), bPassed);
+	}
+
+	// Test 7: Max depth tracking
+	{
+		UTurtleInterpreter* Interp = NewObject<UTurtleInterpreter>(this);
+		FTurtleConfig Config;
+
+		TArray<FBranchSegment> Segments;
+		TArray<FLeafData> Leaves;
+
+		Interp->InterpretString(TEXT("F[[F]F]F"), Config, Segments, Leaves);
+
+		bool bPassed = Interp->GetMaxDepth() == 2;
+		LogTestResult(TEXT("MaxDepthTracking"), bPassed,
+		              FString::Printf(TEXT("MaxDepth: %d"), Interp->GetMaxDepth()));
+	}
+
+	return FailedTests == InitialFailed;
+}
+
+// ============================================================================
+// Phase 3: Tree Geometry Tests
+// ============================================================================
+
+bool ATestLSystemGenerator::TestTreeGeometry()
+{
+	UE_LOG(LogLSystem, Log, TEXT(""));
+	UE_LOG(LogLSystem, Log, TEXT("--- TestTreeGeometry ---"));
+
+	int32 InitialFailed = FailedTests;
+
+	// Test 1: Single segment generates vertices
+	{
+		UTreeGeometry* Geo = NewObject<UTreeGeometry>(this);
+
+		TArray<FBranchSegment> Segments;
+		FBranchSegment Seg;
+		Seg.StartPosition = FVector::ZeroVector;
+		Seg.EndPosition = FVector(0, 0, 100);
+		Seg.StartRadius = 10.0f;
+		Seg.EndRadius = 8.0f;
+		Seg.Direction = FVector::UpVector;
+		Segments.Add(Seg);
+
+		TArray<FLeafData> Leaves;
+
+		FTreeMeshData MeshData = Geo->GenerateMesh(Segments, Leaves, 8, false);
+
+		bool bPassed = MeshData.Vertices.Num() > 0 && MeshData.Triangles.Num() > 0;
+		LogTestResult(TEXT("SingleSegmentGeometry"), bPassed,
+		              FString::Printf(TEXT("Verts: %d, Tris: %d"),
+		                             MeshData.Vertices.Num(), MeshData.GetTriangleCount()));
+	}
+
+	// Test 2: Radial segments affect vertex count
+	{
+		UTreeGeometry* Geo = NewObject<UTreeGeometry>(this);
+
+		TArray<FBranchSegment> Segments;
+		FBranchSegment Seg;
+		Seg.StartPosition = FVector::ZeroVector;
+		Seg.EndPosition = FVector(0, 0, 100);
+		Seg.StartRadius = 10.0f;
+		Seg.EndRadius = 8.0f;
+		Seg.Direction = FVector::UpVector;
+		Segments.Add(Seg);
+
+		TArray<FLeafData> Leaves;
+
+		FTreeMeshData Mesh4 = Geo->GenerateMesh(Segments, Leaves, 4, false);
+		FTreeMeshData Mesh8 = Geo->GenerateMesh(Segments, Leaves, 8, false);
+
+		bool bPassed = Mesh8.Vertices.Num() > Mesh4.Vertices.Num();
+		LogTestResult(TEXT("RadialSegmentsAffectVerts"), bPassed,
+		              FString::Printf(TEXT("4-seg: %d verts, 8-seg: %d verts"),
+		                             Mesh4.Vertices.Num(), Mesh8.Vertices.Num()));
+	}
+
+	// Test 3: Leaf geometry generation
+	{
+		UTreeGeometry* Geo = NewObject<UTreeGeometry>(this);
+		Geo->DefaultLeafSize = FVector2D(10.0f, 15.0f);
+
+		TArray<FBranchSegment> Segments;
+		TArray<FLeafData> Leaves;
+
+		FLeafData Leaf;
+		Leaf.Position = FVector(0, 0, 50);
+		Leaf.Normal = FVector::UpVector;
+		Leaf.UpDirection = FVector::ForwardVector;
+		Leaf.Size = FVector2D(10.0f, 15.0f);
+		Leaves.Add(Leaf);
+
+		FTreeMeshData MeshData = Geo->GenerateMesh(Segments, Leaves, 8, true);
+
+		// Each leaf is a quad = 4 vertices, 4 triangles (2 front + 2 back)
+		bool bPassed = MeshData.Vertices.Num() >= 4;
+		LogTestResult(TEXT("LeafGeometry"), bPassed,
+		              FString::Printf(TEXT("Verts: %d, Tris: %d"),
+		                             MeshData.Vertices.Num(), MeshData.GetTriangleCount()));
+	}
+
+	// Test 4: LOD generation
+	{
+		UTreeGeometry* Geo = NewObject<UTreeGeometry>(this);
+
+		TArray<FBranchSegment> Segments;
+		FBranchSegment Seg;
+		Seg.StartPosition = FVector::ZeroVector;
+		Seg.EndPosition = FVector(0, 0, 100);
+		Seg.StartRadius = 10.0f;
+		Seg.EndRadius = 8.0f;
+		Seg.Direction = FVector::UpVector;
+		Segments.Add(Seg);
+
+		TArray<FLeafData> Leaves;
+		FLeafData Leaf;
+		Leaf.Position = FVector(0, 0, 100);
+		Leaf.Normal = FVector::UpVector;
+		Leaf.UpDirection = FVector::ForwardVector;
+		Leaf.Size = FVector2D(10.0f, 15.0f);
+		Leaves.Add(Leaf);
+
+		TArray<FTreeLODLevel> LODLevels;
+		FTreeLODLevel LOD0;
+		LOD0.RadialSegments = 12;
+		LOD0.bIncludeLeaves = true;
+		LODLevels.Add(LOD0);
+
+		FTreeLODLevel LOD1;
+		LOD1.RadialSegments = 6;
+		LOD1.bIncludeLeaves = false;
+		LODLevels.Add(LOD1);
+
+		TArray<FTreeMeshData> LODs = Geo->GenerateMeshLODs(Segments, Leaves, LODLevels);
+
+		bool bPassed = LODs.Num() == 2 &&
+		               LODs[0].Vertices.Num() > LODs[1].Vertices.Num();
+		LogTestResult(TEXT("LODGeneration"), bPassed,
+		              FString::Printf(TEXT("%d LODs generated"), LODs.Num()));
+	}
+
+	// Test 5: UV generation
+	{
+		UTreeGeometry* Geo = NewObject<UTreeGeometry>(this);
+
+		TArray<FBranchSegment> Segments;
+		FBranchSegment Seg;
+		Seg.StartPosition = FVector::ZeroVector;
+		Seg.EndPosition = FVector(0, 0, 100);
+		Seg.StartRadius = 10.0f;
+		Seg.EndRadius = 8.0f;
+		Seg.Direction = FVector::UpVector;
+		Segments.Add(Seg);
+
+		TArray<FLeafData> Leaves;
+
+		FTreeMeshData MeshData = Geo->GenerateMesh(Segments, Leaves, 8, false);
+
+		bool bPassed = MeshData.UVs.Num() == MeshData.Vertices.Num();
+		LogTestResult(TEXT("UVGeneration"), bPassed,
+		              FString::Printf(TEXT("UVs: %d, Verts: %d"),
+		                             MeshData.UVs.Num(), MeshData.Vertices.Num()));
+	}
+
+	return FailedTests == InitialFailed;
+}
+
+// ============================================================================
+// Phase 3: Tree Math Tests
+// ============================================================================
+
+bool ATestLSystemGenerator::TestTreeMath()
+{
+	UE_LOG(LogLSystem, Log, TEXT(""));
+	UE_LOG(LogLSystem, Log, TEXT("--- TestTreeMath ---"));
+
+	int32 InitialFailed = FailedTests;
+
+	// Test 1: Rotate vector around axis
+	{
+		FVector Result = UTreeMath::RotateVectorAroundAxis(FVector::ForwardVector, FVector::UpVector, 90.0f);
+
+		bool bPassed = FMath::IsNearlyEqual(Result.X, 0.0f, 0.01f) &&
+		               FMath::IsNearlyEqual(FMath::Abs(Result.Y), 1.0f, 0.01f);
+		LogTestResult(TEXT("RotateVectorAroundAxis"), bPassed,
+		              FString::Printf(TEXT("Result: (%.2f, %.2f, %.2f)"), Result.X, Result.Y, Result.Z));
+	}
+
+	// Test 2: 360 degree rotation returns to original
+	{
+		FVector Original = FVector(1.0f, 2.0f, 3.0f).GetSafeNormal();
+		FVector Result = UTreeMath::RotateVectorAroundAxis(Original, FVector::UpVector, 360.0f);
+
+		bool bPassed = Original.Equals(Result, 0.01f);
+		LogTestResult(TEXT("FullRotationReturns"), bPassed);
+	}
+
+	// Test 3: Get perpendicular vectors
+	{
+		FVector Direction = FVector::UpVector;
+		FVector Right, Up;
+		UTreeMath::GetPerpendicularVectors(Direction, Right, Up);
+
+		bool bRightPerp = FMath::IsNearlyZero(FVector::DotProduct(Direction, Right), 0.01f);
+		bool bUpPerp = FMath::IsNearlyZero(FVector::DotProduct(Direction, Up), 0.01f);
+		bool bRightUpPerp = FMath::IsNearlyZero(FVector::DotProduct(Right, Up), 0.01f);
+
+		bool bPassed = bRightPerp && bUpPerp && bRightUpPerp;
+		LogTestResult(TEXT("GetPerpendicularVectors"), bPassed);
+	}
+
+	// Test 4: Reorthogonalize basis
+	{
+		FVector Forward = FVector(1.0f, 0.1f, 0.0f); // Slightly off
+		FVector Left = FVector(0.1f, 1.0f, 0.0f);
+		FVector Up = FVector(0.0f, 0.0f, 1.0f);
+
+		UTreeMath::ReorthogonalizeBasis(Forward, Left, Up);
+
+		bool bNormalized = FMath::IsNearlyEqual(Forward.Size(), 1.0f, 0.01f) &&
+		                   FMath::IsNearlyEqual(Left.Size(), 1.0f, 0.01f) &&
+		                   FMath::IsNearlyEqual(Up.Size(), 1.0f, 0.01f);
+		bool bOrthogonal = FMath::IsNearlyZero(FVector::DotProduct(Forward, Left), 0.01f) &&
+		                   FMath::IsNearlyZero(FVector::DotProduct(Forward, Up), 0.01f) &&
+		                   FMath::IsNearlyZero(FVector::DotProduct(Left, Up), 0.01f);
+
+		bool bPassed = bNormalized && bOrthogonal;
+		LogTestResult(TEXT("ReorthogonalizeBasis"), bPassed);
+	}
+
+	// Test 5: Calculate child width (Leonardo's rule)
+	{
+		float ParentWidth = 10.0f;
+		float ChildWidth = UTreeMath::CalculateChildWidth(ParentWidth, 2, 2.0f);
+
+		// With exponent 2 and 2 children: child = parent / sqrt(2) ~= 7.07
+		bool bPassed = FMath::IsNearlyEqual(ChildWidth, 7.07f, 0.1f);
+		LogTestResult(TEXT("CalculateChildWidth"), bPassed,
+		              FString::Printf(TEXT("Parent: %.2f, Child: %.2f"), ParentWidth, ChildWidth));
+	}
+
+	// Test 6: Apply tropism
+	{
+		FVector Direction = FVector::UpVector;
+		FVector Tropism = FVector(0, 0, -1); // Gravity down
+		FVector Result = UTreeMath::ApplyTropism(Direction, Tropism, 0.5f);
+
+		// Should bend toward gravity
+		bool bPassed = Result.Z < 1.0f && Result.IsNormalized();
+		LogTestResult(TEXT("ApplyTropism"), bPassed,
+		              FString::Printf(TEXT("Result: (%.2f, %.2f, %.2f)"), Result.X, Result.Y, Result.Z));
+	}
+
+	// Test 7: Generate ring points
+	{
+		TArray<FVector> Points = UTreeMath::GenerateRingPoints(FVector::ZeroVector, FVector::UpVector, 10.0f, 8);
+
+		bool bCorrectCount = Points.Num() == 8;
+		bool bCorrectRadius = true;
+		for (const FVector& Point : Points)
+		{
+			float Distance = FVector::Dist(Point, FVector::ZeroVector);
+			if (!FMath::IsNearlyEqual(Distance, 10.0f, 0.1f))
+			{
+				bCorrectRadius = false;
+				break;
+			}
+		}
+
+		bool bPassed = bCorrectCount && bCorrectRadius;
+		LogTestResult(TEXT("GenerateRingPoints"), bPassed,
+		              FString::Printf(TEXT("Points: %d"), Points.Num()));
+	}
+
+	return FailedTests == InitialFailed;
+}
+
+// ============================================================================
+// Phase 3: Full Pipeline Test
+// ============================================================================
+
+bool ATestLSystemGenerator::TestFullPipeline()
+{
+	UE_LOG(LogLSystem, Log, TEXT(""));
+	UE_LOG(LogLSystem, Log, TEXT("--- TestFullPipeline ---"));
+
+	int32 InitialFailed = FailedTests;
+
+	// Test: Full tree generation pipeline
+	{
+		// Step 1: Generate L-System string
+		ULSystemGenerator* Gen = CreateTestGenerator();
+		Gen->Initialize(TEXT("F"));
+		Gen->AddRuleSimple(TEXT("F"), TEXT("FF-[-F+F+FL]+[+F-F-FL]"));
+		Gen->SetRandomSeed(42);
+
+		FLSystemGenerationResult GenResult = Gen->Generate(3);
+
+		if (!GenResult.bSuccess)
+		{
+			LogTestResult(TEXT("FullPipeline_LSystemGen"), false, TEXT("L-System generation failed"));
+			return false;
+		}
+
+		UE_LOG(LogLSystem, Verbose, TEXT("Generated string length: %d"), GenResult.GeneratedString.Len());
+
+		// Step 2: Interpret with turtle
+		UTurtleInterpreter* Interp = NewObject<UTurtleInterpreter>(this);
+		FTurtleConfig Config;
+		Config.DefaultAngle = 25.0f;
+		Config.StepLength = 10.0f;
+		Config.InitialWidth = 5.0f;
+		Config.WidthFalloff = 0.7f;
+		Config.RandomSeed = 42;
+
+		TArray<FBranchSegment> Segments;
+		TArray<FLeafData> Leaves;
+
+		Interp->InterpretString(GenResult.GeneratedString, Config, Segments, Leaves);
+
+		bool bInterpOk = Segments.Num() > 0;
+		LogTestResult(TEXT("FullPipeline_Interpretation"), bInterpOk,
+		              FString::Printf(TEXT("Segments: %d, Leaves: %d"), Segments.Num(), Leaves.Num()));
+
+		if (!bInterpOk)
+		{
+			return false;
+		}
+
+		// Step 3: Generate geometry
+		UTreeGeometry* Geo = NewObject<UTreeGeometry>(this);
+
+		TArray<FTreeLODLevel> LODLevels;
+		FTreeLODLevel LOD0;
+		LOD0.RadialSegments = 8;
+		LOD0.bIncludeLeaves = true;
+		LODLevels.Add(LOD0);
+
+		TArray<FTreeMeshData> LODs = Geo->GenerateMeshLODs(Segments, Leaves, LODLevels);
+
+		bool bGeoOk = LODs.Num() > 0 && LODs[0].Vertices.Num() > 0;
+		LogTestResult(TEXT("FullPipeline_Geometry"), bGeoOk,
+		              FString::Printf(TEXT("Vertices: %d, Triangles: %d"),
+		                             LODs[0].Vertices.Num(), LODs[0].GetTriangleCount()));
+
+		// Overall pipeline success
+		bool bPassed = GenResult.bSuccess && bInterpOk && bGeoOk;
+		LogTestResult(TEXT("FullPipeline_Complete"), bPassed);
+	}
+
+	return FailedTests == InitialFailed;
 }
 
 // ============================================================================
