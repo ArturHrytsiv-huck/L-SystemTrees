@@ -64,6 +64,10 @@ FTreeMeshData UTreeGeometry::GenerateMesh(const TArray<FBranchSegment>& Segments
 
 	// Clamp radial segments
 	RadialSegments = FMath::Clamp(RadialSegments, 3, 32);
+	CurrentRadialSegments = RadialSegments;
+
+	// Clear segment tracking
+	SegmentEndRingIndices.Empty();
 
 	// Estimate capacity
 	const int32 EstimatedBranchVertices = Segments.Num() * RadialSegments * 2;
@@ -75,11 +79,12 @@ FTreeMeshData UTreeGeometry::GenerateMesh(const TArray<FBranchSegment>& Segments
 	CurrentMeshData.UVs.Reserve(TotalEstimatedVertices);
 	CurrentMeshData.Triangles.Reserve(Segments.Num() * RadialSegments * 6 + Leaves.Num() * 6);
 
-	// Generate branch geometry
+	// Generate branch geometry with connectivity
 	CurrentVCoordinate = 0.0f;
-	for (const FBranchSegment& Segment : Segments)
+	for (int32 SegmentIndex = 0; SegmentIndex < Segments.Num(); ++SegmentIndex)
 	{
-		GenerateBranchCylinder(Segment, RadialSegments);
+		const FBranchSegment& Segment = Segments[SegmentIndex];
+		GenerateBranchCylinderConnected(Segment, SegmentIndex, RadialSegments);
 	}
 
 	// Record branch counts
@@ -112,6 +117,7 @@ FTreeMeshData UTreeGeometry::GenerateMesh(const TArray<FBranchSegment>& Segments
 
 void UTreeGeometry::GenerateBranchCylinder(const FBranchSegment& Segment, int32 RadialSegments)
 {
+	// Legacy function - calls connected version with no parent
 	const float SegmentLength = Segment.GetLength();
 	if (SegmentLength < KINDA_SMALL_NUMBER)
 	{
@@ -120,7 +126,7 @@ void UTreeGeometry::GenerateBranchCylinder(const FBranchSegment& Segment, int32 
 
 	// Calculate UV V coordinates
 	const float StartV = CurrentVCoordinate;
-	const float EndV = StartV + (SegmentLength * BarkUVTiling / 100.0f); // Scale for reasonable tiling
+	const float EndV = StartV + (SegmentLength * BarkUVTiling / 100.0f);
 	CurrentVCoordinate = EndV;
 
 	// Generate rings at start and end of segment
@@ -128,6 +134,56 @@ void UTreeGeometry::GenerateBranchCylinder(const FBranchSegment& Segment, int32 
 	                                           Segment.StartRadius, RadialSegments, StartV);
 	const int32 EndRingIndex = GenerateRing(Segment.EndPosition, Segment.Direction,
 	                                         Segment.EndRadius, RadialSegments, EndV);
+
+	// Connect the rings with triangles
+	ConnectRings(StartRingIndex, EndRingIndex, RadialSegments);
+}
+
+void UTreeGeometry::GenerateBranchCylinderConnected(const FBranchSegment& Segment, int32 SegmentIndex, int32 RadialSegments)
+{
+	const float SegmentLength = Segment.GetLength();
+	if (SegmentLength < KINDA_SMALL_NUMBER)
+	{
+		return;
+	}
+
+	// Calculate UV V coordinates
+	const float StartV = CurrentVCoordinate;
+	const float EndV = StartV + (SegmentLength * BarkUVTiling / 100.0f);
+	CurrentVCoordinate = EndV;
+
+	int32 StartRingIndex;
+
+	// Check if this segment connects to a parent
+	if (Segment.ParentSegmentIndex >= 0)
+	{
+		// Look up parent's end ring
+		const int32* ParentEndRing = SegmentEndRingIndices.Find(Segment.ParentSegmentIndex);
+		if (ParentEndRing != nullptr)
+		{
+			// Reuse parent's end ring as our start ring
+			StartRingIndex = *ParentEndRing;
+		}
+		else
+		{
+			// Parent ring not found (shouldn't happen), generate new ring
+			StartRingIndex = GenerateRing(Segment.StartPosition, Segment.Direction,
+			                               Segment.StartRadius, RadialSegments, StartV);
+		}
+	}
+	else
+	{
+		// No parent - generate a new start ring
+		StartRingIndex = GenerateRing(Segment.StartPosition, Segment.Direction,
+		                               Segment.StartRadius, RadialSegments, StartV);
+	}
+
+	// Always generate end ring
+	const int32 EndRingIndex = GenerateRing(Segment.EndPosition, Segment.Direction,
+	                                         Segment.EndRadius, RadialSegments, EndV);
+
+	// Store this segment's end ring for children to use
+	SegmentEndRingIndices.Add(SegmentIndex, EndRingIndex);
 
 	// Connect the rings with triangles
 	ConnectRings(StartRingIndex, EndRingIndex, RadialSegments);

@@ -101,7 +101,10 @@ void UTurtleInterpreter::HandleForward(bool bDraw)
 		Segment.Direction = CurrentState.Forward;
 		Segment.Depth = CurrentState.Depth;
 		Segment.MaterialIndex = 0;
+		Segment.ParentSegmentIndex = CurrentState.LastSegmentIndex;
 
+		// Update last segment index before adding
+		CurrentState.LastSegmentIndex = OutputSegments.Num();
 		OutputSegments.Add(Segment);
 	}
 

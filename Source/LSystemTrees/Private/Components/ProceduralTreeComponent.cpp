@@ -25,10 +25,12 @@ UProceduralTreeComponent::UProceduralTreeComponent(const FObjectInitializer& Obj
 	, GeometryBuilder(nullptr)
 	, CurrentLODIndex(0)
 {
-	// Set up default simple tree rule
+	// Set up default 3D tree rule with pitch variations for depth
+	// Uses ^ (pitch up) and & (pitch down) for 3D growth
+	// Uses / and \ (roll) for branch rotation variety
 	FLSystemRule DefaultRule;
 	DefaultRule.Predecessor = TEXT("F");
-	DefaultRule.Successor = TEXT("FF-[-F+F+FL]+[+F-F-FL]");
+	DefaultRule.Successor = TEXT("FF&[-/F+F+FL]^[+\\F-F-FL]");
 	DefaultRule.Probability = 1.0f;
 	Rules.Add(DefaultRule);
 

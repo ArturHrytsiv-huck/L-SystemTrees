@@ -93,6 +93,15 @@ protected:
 	void GenerateBranchCylinder(const FBranchSegment& Segment, int32 RadialSegments);
 
 	/**
+	 * Generate a tapered cylinder with connectivity to parent segment.
+	 * Reuses parent's end ring when connected for smooth joints.
+	 * @param Segment The branch segment to generate geometry for
+	 * @param SegmentIndex Index of this segment in the array
+	 * @param RadialSegments Number of segments around the cylinder
+	 */
+	void GenerateBranchCylinderConnected(const FBranchSegment& Segment, int32 SegmentIndex, int32 RadialSegments);
+
+	/**
 	 * Generate a ring of vertices around a point.
 	 * @param Center Center point of the ring
 	 * @param Direction Direction the ring faces (cylinder axis)
@@ -147,4 +156,10 @@ private:
 
 	/** Random stream for leaf rotation variation */
 	FRandomStream RandomStream;
+
+	/** Maps segment index to its end ring's first vertex index */
+	TMap<int32, int32> SegmentEndRingIndices;
+
+	/** Current radial segments count (cached for connected segments) */
+	int32 CurrentRadialSegments;
 };

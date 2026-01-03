@@ -543,6 +543,10 @@ struct LSYSTEMTREES_API FTurtleState
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turtle|State")
 	int32 Depth;
 
+	/** Index of the last segment created at this state (-1 if none) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turtle|State")
+	int32 LastSegmentIndex;
+
 	/** Default constructor - starts at origin pointing up */
 	FTurtleState()
 		: Position(FVector::ZeroVector)
@@ -551,6 +555,7 @@ struct LSYSTEMTREES_API FTurtleState
 		, Up(FVector::ForwardVector)      // X (perpendicular to Z-up)
 		, CurrentWidth(5.0f)
 		, Depth(0)
+		, LastSegmentIndex(-1)
 	{
 	}
 
@@ -560,6 +565,7 @@ struct LSYSTEMTREES_API FTurtleState
 		, Forward(InForward.GetSafeNormal())
 		, CurrentWidth(InWidth)
 		, Depth(0)
+		, LastSegmentIndex(-1)
 	{
 		// Calculate orthonormal basis
 		if (FMath::Abs(Forward.Z) < 0.99f)
@@ -615,6 +621,10 @@ struct LSYSTEMTREES_API FBranchSegment
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
 	int32 MaterialIndex;
 
+	/** Index of parent segment this connects to (-1 if root/no parent) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
+	int32 ParentSegmentIndex;
+
 	/** Default constructor */
 	FBranchSegment()
 		: StartPosition(FVector::ZeroVector)
@@ -624,17 +634,19 @@ struct LSYSTEMTREES_API FBranchSegment
 		, Direction(FVector::UpVector)
 		, Depth(0)
 		, MaterialIndex(0)
+		, ParentSegmentIndex(-1)
 	{
 	}
 
 	/** Constructor with positions and radii */
-	FBranchSegment(const FVector& InStart, const FVector& InEnd, float InStartRadius, float InEndRadius, int32 InDepth = 0)
+	FBranchSegment(const FVector& InStart, const FVector& InEnd, float InStartRadius, float InEndRadius, int32 InDepth = 0, int32 InParentIndex = -1)
 		: StartPosition(InStart)
 		, EndPosition(InEnd)
 		, StartRadius(InStartRadius)
 		, EndRadius(InEndRadius)
 		, Depth(InDepth)
 		, MaterialIndex(0)
+		, ParentSegmentIndex(InParentIndex)
 	{
 		FVector Delta = InEnd - InStart;
 		Direction = Delta.GetSafeNormal();
