@@ -1,167 +1,811 @@
 # L-System Tree Presets
 
-## Fruit Tree Formulas
+This document contains copy-paste ready presets for different tree types.
+Each preset is in Unreal Engine property export format - you can copy the JSON and import it.
 
-### 1. Apple Tree (Recommended)
-Rounded canopy with spreading horizontal branches.
+---
 
-```
-Axiom: FA
-Rules:
-  A -> [&FL]////[&FL]////[&FL]////[&FL]////[&FL]
-  F -> S//[--L][++L]F
-  S -> S[//&&L][//^^L]
+## 1. Birch Tree
 
-Iterations: 4
-DefaultAngle: 30
-PitchAngle: 25
-RollAngle: 72 (360/5 for 5-way symmetry)
-StepLength: 15
-WidthFalloff: 0.65
-```
+Tall, slender tree with delicate upward branching and fine twigs. Characteristic white bark appearance.
 
-**Simplified Apple Tree (single rule):**
-```
-Axiom: F
-Rule: F -> FF[&&-FL][&&+FL][&---L][&+++L]
-Iterations: 4
-DefaultAngle: 25
-PitchAngle: 35
-```
-
-### 2. Cherry/Peach Tree
-More upright with graceful drooping branch tips.
-
-```
-Axiom: F
-Rule: F -> FF&[+F-FL]&[-F+FL]
-Iterations: 5
-DefaultAngle: 28
-PitchAngle: 15
-StepLength: 12
-WidthFalloff: 0.7
-```
-
-### 3. Orange/Citrus Tree
-Dense, bushy, rounded shape with many small branches.
-
-```
-Axiom: FA
-Rules:
-  A -> [+FA][-FA][^FA][&FA]
-  F -> FF
-
-Iterations: 4
-DefaultAngle: 35
-PitchAngle: 35
-StepLength: 8
-WidthFalloff: 0.75
-BranchProbability: 0.85
-```
-
-### 4. Weeping Tree (Willow-like)
-Drooping branches.
-
-```
-Axiom: F
-Rule: F -> FF[&&+F&&+F&&L][&&-F&&-F&&L]
-Iterations: 5
-DefaultAngle: 20
-PitchAngle: 25
-StepLength: 10
-TropismStrength: 0.3
-```
-
-### 5. Realistic Fruit Tree (Complex)
-Most natural-looking with multiple rules.
-
-```
-Axiom: FFFA
-Rules:
-  A -> [&B]////[&B]////[&B]
-  B -> F[--L][++L]FA
-  F -> S
-  S -> F
-
-Iterations: 5
-DefaultAngle: 25
-PitchAngle: 30
-RollAngle: 120 (360/3 for 3-way branching)
-StepLength: 12
-InitialWidth: 8
-WidthFalloff: 0.6
-AngleVariationMin: -10
-AngleVariationMax: 10
-StepLengthVariation: 0.15
-BranchProbability: 0.9
+```json
+{
+    "Tagged": [
+        ["Axiom", "FFFFA"],
+        ["Rules", "((Predecessor=\"A\",Successor=\"[&+BL]////[&-BL]////[&BL]\"),(Predecessor=\"B\",Successor=\"F[--L][++L]A\"),(Predecessor=\"F\",Successor=\"S\"),(Predecessor=\"S\",Successor=\"FF\"))"],
+        ["Rules.Rules[0]", "(LeftContext=\"\",Predecessor=\"A\",RightContext=\"\",Successor=\"[&+BL]////[&-BL]////[&BL]\",Probability=1.000000)"],
+        ["Rules.Rules[0].LeftContext", ""],
+        ["Rules.Rules[0].Predecessor", "A"],
+        ["Rules.Rules[0].RightContext", ""],
+        ["Rules.Rules[0].Successor", "[&+BL]////[&-BL]////[&BL]"],
+        ["Rules.Rules[0].Probability", "1.000000"],
+        ["Rules.Rules[1]", "(LeftContext=\"\",Predecessor=\"B\",RightContext=\"\",Successor=\"F[--L][++L]A\",Probability=1.000000)"],
+        ["Rules.Rules[1].LeftContext", ""],
+        ["Rules.Rules[1].Predecessor", "B"],
+        ["Rules.Rules[1].RightContext", ""],
+        ["Rules.Rules[1].Successor", "F[--L][++L]A"],
+        ["Rules.Rules[1].Probability", "1.000000"],
+        ["Rules.Rules[2]", "(LeftContext=\"\",Predecessor=\"F\",RightContext=\"\",Successor=\"S\",Probability=1.000000)"],
+        ["Rules.Rules[2].LeftContext", ""],
+        ["Rules.Rules[2].Predecessor", "F"],
+        ["Rules.Rules[2].RightContext", ""],
+        ["Rules.Rules[2].Successor", "S"],
+        ["Rules.Rules[2].Probability", "1.000000"],
+        ["Rules.Rules[3]", "(LeftContext=\"\",Predecessor=\"S\",RightContext=\"\",Successor=\"FF\",Probability=1.000000)"],
+        ["Rules.Rules[3].LeftContext", ""],
+        ["Rules.Rules[3].Predecessor", "S"],
+        ["Rules.Rules[3].RightContext", ""],
+        ["Rules.Rules[3].Successor", "FF"],
+        ["Rules.Rules[3].Probability", "1.000000"],
+        ["Iterations", "10"],
+        ["RandomSeed", "1"],
+        ["bRandomizeSeed", "True"],
+        ["TurtleConfig", "(DefaultAngle=18.000000,PitchAngle=8.000000,RollAngle=120.000000,StepLength=30.000000,InitialWidth=5.000000,WidthFalloff=0.650000,MinWidth=0.300000,TropismStrength=0.020000,GravityVector=(X=0.000000,Y=0.000000,Z=-1.000000),InitialPosition=(X=0.000000,Y=0.000000,Z=0.000000),InitialForward=(X=0.000000,Y=0.000000,Z=1.000000),LeafSize=(X=6.000000,Y=8.000000),RandomSeed=1,BranchProbability=0.850000,AngleVariationMin=-8.000000,AngleVariationMax=8.000000,StepLengthVariation=0.100000,bRandomizePitchDirection=True,PitchFlipProbability=0.300000,PitchVariationMin=-10.000000,PitchVariationMax=10.000000,InitialRandomRoll=360.000000)"],
+        ["TurtleConfig.DefaultAngle", "18.000000"],
+        ["TurtleConfig.PitchAngle", "8.000000"],
+        ["TurtleConfig.RollAngle", "120.000000"],
+        ["TurtleConfig.StepLength", "30.000000"],
+        ["TurtleConfig.InitialWidth", "5.000000"],
+        ["TurtleConfig.WidthFalloff", "0.650000"],
+        ["TurtleConfig.MinWidth", "0.300000"],
+        ["TurtleConfig.TropismStrength", "0.020000"],
+        ["TurtleConfig.GravityVector", "(X=0.000000,Y=0.000000,Z=-1.000000)"],
+        ["TurtleConfig.GravityVector.X", "0.000000"],
+        ["TurtleConfig.GravityVector.Y", "0.000000"],
+        ["TurtleConfig.GravityVector.Z", "-1.000000"],
+        ["TurtleConfig.InitialPosition", "(X=0.000000,Y=0.000000,Z=0.000000)"],
+        ["TurtleConfig.InitialPosition.X", "0.000000"],
+        ["TurtleConfig.InitialPosition.Y", "0.000000"],
+        ["TurtleConfig.InitialPosition.Z", "0.000000"],
+        ["TurtleConfig.InitialForward", "(X=0.000000,Y=0.000000,Z=1.000000)"],
+        ["TurtleConfig.InitialForward.X", "0.000000"],
+        ["TurtleConfig.InitialForward.Y", "0.000000"],
+        ["TurtleConfig.InitialForward.Z", "1.000000"],
+        ["TurtleConfig.LeafSize", "(X=6.000000,Y=8.000000)"],
+        ["TurtleConfig.LeafSize.X", "6.000000"],
+        ["TurtleConfig.LeafSize.Y", "8.000000"],
+        ["TurtleConfig.RandomSeed", "1"],
+        ["TurtleConfig.BranchProbability", "0.850000"],
+        ["TurtleConfig.AngleVariationMin", "-8.000000"],
+        ["TurtleConfig.AngleVariationMax", "8.000000"],
+        ["TurtleConfig.StepLengthVariation", "0.100000"],
+        ["TurtleConfig.bRandomizePitchDirection", "True"],
+        ["TurtleConfig.PitchFlipProbability", "0.300000"],
+        ["TurtleConfig.PitchVariationMin", "-10.000000"],
+        ["TurtleConfig.PitchVariationMax", "10.000000"],
+        ["TurtleConfig.InitialRandomRoll", "360.000000"],
+        ["GeometryConfig", "(LODLevels=((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)),LeafSize=(X=6.000000,Y=8.000000),LeafRandomRotation=30.000000,bGenerateCollision=True,BarkUVTiling=1.000000)"],
+        ["GeometryConfig.LODLevels", "((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False))"],
+        ["GeometryConfig.LODLevels.LODLevels[0]", "(RadialSegments=16,ScreenSize=1.000000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[0].RadialSegments", "16"],
+        ["GeometryConfig.LODLevels.LODLevels[0].ScreenSize", "1.000000"],
+        ["GeometryConfig.LODLevels.LODLevels[0].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[1]", "(RadialSegments=8,ScreenSize=0.500000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[1].RadialSegments", "8"],
+        ["GeometryConfig.LODLevels.LODLevels[1].ScreenSize", "0.500000"],
+        ["GeometryConfig.LODLevels.LODLevels[1].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[2]", "(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)"],
+        ["GeometryConfig.LODLevels.LODLevels[2].RadialSegments", "4"],
+        ["GeometryConfig.LODLevels.LODLevels[2].ScreenSize", "0.250000"],
+        ["GeometryConfig.LODLevels.LODLevels[2].bIncludeLeaves", "False"],
+        ["GeometryConfig.LeafSize", "(X=6.000000,Y=8.000000)"],
+        ["GeometryConfig.LeafSize.X", "6.000000"],
+        ["GeometryConfig.LeafSize.Y", "8.000000"],
+        ["GeometryConfig.LeafRandomRotation", "30.000000"],
+        ["GeometryConfig.bGenerateCollision", "True"],
+        ["GeometryConfig.BarkUVTiling", "1.000000"],
+        ["bGenerateOnStart", "True"],
+        ["BarkMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Bark/M_Bark.M_Bark'"],
+        ["LeafMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Leaves/M_Leaf.M_Leaf'"]
+    ]
+}
 ```
 
 ---
 
-## Symbol Reference
+## 2. Oak Tree
 
-| Symbol | Action |
-|--------|--------|
-| F | Move forward, draw branch |
-| f | Move forward, no branch |
-| + | Turn right (yaw) |
-| - | Turn left (yaw) |
-| ^ | Pitch up |
-| & | Pitch down (toward ground) |
-| \ | Roll clockwise |
-| / | Roll counter-clockwise |
-| \| | Turn around 180 |
-| [ | Save state (start branch) |
-| ] | Restore state (end branch) |
-| L | Place leaf |
-| A,B,S,X,Y,Z | Variables (no action, used in rules) |
+Massive, wide-spreading crown with thick trunk and strong horizontal branches. Dense foliage.
+
+```json
+{
+    "Tagged": [
+        ["Axiom", "FFA"],
+        ["Rules", "((Predecessor=\"A\",Successor=\"[&&B]///[&&B]///[&&B]///[&&B]\"),(Predecessor=\"B\",Successor=\"FF[--L][++L][&L]FA\"),(Predecessor=\"F\",Successor=\"SF\"),(Predecessor=\"S\",Successor=\"F\"))"],
+        ["Rules.Rules[0]", "(LeftContext=\"\",Predecessor=\"A\",RightContext=\"\",Successor=\"[&&B]///[&&B]///[&&B]///[&&B]\",Probability=1.000000)"],
+        ["Rules.Rules[0].LeftContext", ""],
+        ["Rules.Rules[0].Predecessor", "A"],
+        ["Rules.Rules[0].RightContext", ""],
+        ["Rules.Rules[0].Successor", "[&&B]///[&&B]///[&&B]///[&&B]"],
+        ["Rules.Rules[0].Probability", "1.000000"],
+        ["Rules.Rules[1]", "(LeftContext=\"\",Predecessor=\"B\",RightContext=\"\",Successor=\"FF[--L][++L][&L]FA\",Probability=1.000000)"],
+        ["Rules.Rules[1].LeftContext", ""],
+        ["Rules.Rules[1].Predecessor", "B"],
+        ["Rules.Rules[1].RightContext", ""],
+        ["Rules.Rules[1].Successor", "FF[--L][++L][&L]FA"],
+        ["Rules.Rules[1].Probability", "1.000000"],
+        ["Rules.Rules[2]", "(LeftContext=\"\",Predecessor=\"F\",RightContext=\"\",Successor=\"SF\",Probability=1.000000)"],
+        ["Rules.Rules[2].LeftContext", ""],
+        ["Rules.Rules[2].Predecessor", "F"],
+        ["Rules.Rules[2].RightContext", ""],
+        ["Rules.Rules[2].Successor", "SF"],
+        ["Rules.Rules[2].Probability", "1.000000"],
+        ["Rules.Rules[3]", "(LeftContext=\"\",Predecessor=\"S\",RightContext=\"\",Successor=\"F\",Probability=1.000000)"],
+        ["Rules.Rules[3].LeftContext", ""],
+        ["Rules.Rules[3].Predecessor", "S"],
+        ["Rules.Rules[3].RightContext", ""],
+        ["Rules.Rules[3].Successor", "F"],
+        ["Rules.Rules[3].Probability", "1.000000"],
+        ["Iterations", "10"],
+        ["RandomSeed", "1"],
+        ["bRandomizeSeed", "True"],
+        ["TurtleConfig", "(DefaultAngle=30.000000,PitchAngle=35.000000,RollAngle=90.000000,StepLength=20.000000,InitialWidth=12.000000,WidthFalloff=0.550000,MinWidth=0.600000,TropismStrength=0.080000,GravityVector=(X=0.000000,Y=0.000000,Z=-1.000000),InitialPosition=(X=0.000000,Y=0.000000,Z=0.000000),InitialForward=(X=0.000000,Y=0.000000,Z=1.000000),LeafSize=(X=12.000000,Y=14.000000),RandomSeed=1,BranchProbability=0.800000,AngleVariationMin=-20.000000,AngleVariationMax=20.000000,StepLengthVariation=0.200000,bRandomizePitchDirection=True,PitchFlipProbability=0.400000,PitchVariationMin=-15.000000,PitchVariationMax=15.000000,InitialRandomRoll=360.000000)"],
+        ["TurtleConfig.DefaultAngle", "30.000000"],
+        ["TurtleConfig.PitchAngle", "35.000000"],
+        ["TurtleConfig.RollAngle", "90.000000"],
+        ["TurtleConfig.StepLength", "20.000000"],
+        ["TurtleConfig.InitialWidth", "12.000000"],
+        ["TurtleConfig.WidthFalloff", "0.550000"],
+        ["TurtleConfig.MinWidth", "0.600000"],
+        ["TurtleConfig.TropismStrength", "0.080000"],
+        ["TurtleConfig.GravityVector", "(X=0.000000,Y=0.000000,Z=-1.000000)"],
+        ["TurtleConfig.GravityVector.X", "0.000000"],
+        ["TurtleConfig.GravityVector.Y", "0.000000"],
+        ["TurtleConfig.GravityVector.Z", "-1.000000"],
+        ["TurtleConfig.InitialPosition", "(X=0.000000,Y=0.000000,Z=0.000000)"],
+        ["TurtleConfig.InitialPosition.X", "0.000000"],
+        ["TurtleConfig.InitialPosition.Y", "0.000000"],
+        ["TurtleConfig.InitialPosition.Z", "0.000000"],
+        ["TurtleConfig.InitialForward", "(X=0.000000,Y=0.000000,Z=1.000000)"],
+        ["TurtleConfig.InitialForward.X", "0.000000"],
+        ["TurtleConfig.InitialForward.Y", "0.000000"],
+        ["TurtleConfig.InitialForward.Z", "1.000000"],
+        ["TurtleConfig.LeafSize", "(X=12.000000,Y=14.000000)"],
+        ["TurtleConfig.LeafSize.X", "12.000000"],
+        ["TurtleConfig.LeafSize.Y", "14.000000"],
+        ["TurtleConfig.RandomSeed", "1"],
+        ["TurtleConfig.BranchProbability", "0.800000"],
+        ["TurtleConfig.AngleVariationMin", "-20.000000"],
+        ["TurtleConfig.AngleVariationMax", "20.000000"],
+        ["TurtleConfig.StepLengthVariation", "0.200000"],
+        ["TurtleConfig.bRandomizePitchDirection", "True"],
+        ["TurtleConfig.PitchFlipProbability", "0.400000"],
+        ["TurtleConfig.PitchVariationMin", "-15.000000"],
+        ["TurtleConfig.PitchVariationMax", "15.000000"],
+        ["TurtleConfig.InitialRandomRoll", "360.000000"],
+        ["GeometryConfig", "(LODLevels=((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)),LeafSize=(X=12.000000,Y=14.000000),LeafRandomRotation=60.000000,bGenerateCollision=True,BarkUVTiling=1.200000)"],
+        ["GeometryConfig.LODLevels", "((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False))"],
+        ["GeometryConfig.LODLevels.LODLevels[0]", "(RadialSegments=16,ScreenSize=1.000000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[0].RadialSegments", "16"],
+        ["GeometryConfig.LODLevels.LODLevels[0].ScreenSize", "1.000000"],
+        ["GeometryConfig.LODLevels.LODLevels[0].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[1]", "(RadialSegments=8,ScreenSize=0.500000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[1].RadialSegments", "8"],
+        ["GeometryConfig.LODLevels.LODLevels[1].ScreenSize", "0.500000"],
+        ["GeometryConfig.LODLevels.LODLevels[1].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[2]", "(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)"],
+        ["GeometryConfig.LODLevels.LODLevels[2].RadialSegments", "4"],
+        ["GeometryConfig.LODLevels.LODLevels[2].ScreenSize", "0.250000"],
+        ["GeometryConfig.LODLevels.LODLevels[2].bIncludeLeaves", "False"],
+        ["GeometryConfig.LeafSize", "(X=12.000000,Y=14.000000)"],
+        ["GeometryConfig.LeafSize.X", "12.000000"],
+        ["GeometryConfig.LeafSize.Y", "14.000000"],
+        ["GeometryConfig.LeafRandomRotation", "60.000000"],
+        ["GeometryConfig.bGenerateCollision", "True"],
+        ["GeometryConfig.BarkUVTiling", "1.200000"],
+        ["bGenerateOnStart", "True"],
+        ["BarkMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Bark/M_Bark.M_Bark'"],
+        ["LeafMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Leaves/M_Leaf.M_Leaf'"]
+    ]
+}
+```
 
 ---
 
-## Tips for Natural Fruit Trees
+## 3. Willow Tree
 
-1. **Use `&` (pitch down)** to make branches spread outward, not just sideways
-2. **Multiple roll symbols** (`////`) create radial branch distribution around trunk
-3. **Lower angles** (20-30) look more natural than 45
-4. **Add randomness**:
-   - `AngleVariationMin: -8`
-   - `AngleVariationMax: 8`
-   - `BranchProbability: 0.85`
-5. **Tropism** (0.1-0.2) makes branches droop realistically
-6. **Use variables** (A, B) for multi-stage growth patterns
+Weeping tree with long, graceful drooping branches. Heavy tropism creates characteristic cascading effect.
+
+```json
+{
+    "Tagged": [
+        ["Axiom", "FFFA"],
+        ["Rules", "((Predecessor=\"A\",Successor=\"[&&&B]////[&&&B]////[&&&B]\"),(Predecessor=\"B\",Successor=\"F[--L][++L]F[&L]A\"),(Predecessor=\"F\",Successor=\"S\"),(Predecessor=\"S\",Successor=\"FF\"))"],
+        ["Rules.Rules[0]", "(LeftContext=\"\",Predecessor=\"A\",RightContext=\"\",Successor=\"[&&&B]////[&&&B]////[&&&B]\",Probability=1.000000)"],
+        ["Rules.Rules[0].LeftContext", ""],
+        ["Rules.Rules[0].Predecessor", "A"],
+        ["Rules.Rules[0].RightContext", ""],
+        ["Rules.Rules[0].Successor", "[&&&B]////[&&&B]////[&&&B]"],
+        ["Rules.Rules[0].Probability", "1.000000"],
+        ["Rules.Rules[1]", "(LeftContext=\"\",Predecessor=\"B\",RightContext=\"\",Successor=\"F[--L][++L]F[&L]A\",Probability=1.000000)"],
+        ["Rules.Rules[1].LeftContext", ""],
+        ["Rules.Rules[1].Predecessor", "B"],
+        ["Rules.Rules[1].RightContext", ""],
+        ["Rules.Rules[1].Successor", "F[--L][++L]F[&L]A"],
+        ["Rules.Rules[1].Probability", "1.000000"],
+        ["Rules.Rules[2]", "(LeftContext=\"\",Predecessor=\"F\",RightContext=\"\",Successor=\"S\",Probability=1.000000)"],
+        ["Rules.Rules[2].LeftContext", ""],
+        ["Rules.Rules[2].Predecessor", "F"],
+        ["Rules.Rules[2].RightContext", ""],
+        ["Rules.Rules[2].Successor", "S"],
+        ["Rules.Rules[2].Probability", "1.000000"],
+        ["Rules.Rules[3]", "(LeftContext=\"\",Predecessor=\"S\",RightContext=\"\",Successor=\"FF\",Probability=1.000000)"],
+        ["Rules.Rules[3].LeftContext", ""],
+        ["Rules.Rules[3].Predecessor", "S"],
+        ["Rules.Rules[3].RightContext", ""],
+        ["Rules.Rules[3].Successor", "FF"],
+        ["Rules.Rules[3].Probability", "1.000000"],
+        ["Iterations", "11"],
+        ["RandomSeed", "1"],
+        ["bRandomizeSeed", "True"],
+        ["TurtleConfig", "(DefaultAngle=15.000000,PitchAngle=45.000000,RollAngle=120.000000,StepLength=22.000000,InitialWidth=10.000000,WidthFalloff=0.580000,MinWidth=0.200000,TropismStrength=0.250000,GravityVector=(X=0.000000,Y=0.000000,Z=-1.000000),InitialPosition=(X=0.000000,Y=0.000000,Z=0.000000),InitialForward=(X=0.000000,Y=0.000000,Z=1.000000),LeafSize=(X=4.000000,Y=18.000000),RandomSeed=1,BranchProbability=0.900000,AngleVariationMin=-10.000000,AngleVariationMax=10.000000,StepLengthVariation=0.120000,bRandomizePitchDirection=False,PitchFlipProbability=0.150000,PitchVariationMin=-5.000000,PitchVariationMax=20.000000,InitialRandomRoll=360.000000)"],
+        ["TurtleConfig.DefaultAngle", "15.000000"],
+        ["TurtleConfig.PitchAngle", "45.000000"],
+        ["TurtleConfig.RollAngle", "120.000000"],
+        ["TurtleConfig.StepLength", "22.000000"],
+        ["TurtleConfig.InitialWidth", "10.000000"],
+        ["TurtleConfig.WidthFalloff", "0.580000"],
+        ["TurtleConfig.MinWidth", "0.200000"],
+        ["TurtleConfig.TropismStrength", "0.250000"],
+        ["TurtleConfig.GravityVector", "(X=0.000000,Y=0.000000,Z=-1.000000)"],
+        ["TurtleConfig.GravityVector.X", "0.000000"],
+        ["TurtleConfig.GravityVector.Y", "0.000000"],
+        ["TurtleConfig.GravityVector.Z", "-1.000000"],
+        ["TurtleConfig.InitialPosition", "(X=0.000000,Y=0.000000,Z=0.000000)"],
+        ["TurtleConfig.InitialPosition.X", "0.000000"],
+        ["TurtleConfig.InitialPosition.Y", "0.000000"],
+        ["TurtleConfig.InitialPosition.Z", "0.000000"],
+        ["TurtleConfig.InitialForward", "(X=0.000000,Y=0.000000,Z=1.000000)"],
+        ["TurtleConfig.InitialForward.X", "0.000000"],
+        ["TurtleConfig.InitialForward.Y", "0.000000"],
+        ["TurtleConfig.InitialForward.Z", "1.000000"],
+        ["TurtleConfig.LeafSize", "(X=4.000000,Y=18.000000)"],
+        ["TurtleConfig.LeafSize.X", "4.000000"],
+        ["TurtleConfig.LeafSize.Y", "18.000000"],
+        ["TurtleConfig.RandomSeed", "1"],
+        ["TurtleConfig.BranchProbability", "0.900000"],
+        ["TurtleConfig.AngleVariationMin", "-10.000000"],
+        ["TurtleConfig.AngleVariationMax", "10.000000"],
+        ["TurtleConfig.StepLengthVariation", "0.120000"],
+        ["TurtleConfig.bRandomizePitchDirection", "False"],
+        ["TurtleConfig.PitchFlipProbability", "0.150000"],
+        ["TurtleConfig.PitchVariationMin", "-5.000000"],
+        ["TurtleConfig.PitchVariationMax", "20.000000"],
+        ["TurtleConfig.InitialRandomRoll", "360.000000"],
+        ["GeometryConfig", "(LODLevels=((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)),LeafSize=(X=4.000000,Y=18.000000),LeafRandomRotation=20.000000,bGenerateCollision=True,BarkUVTiling=0.800000)"],
+        ["GeometryConfig.LODLevels", "((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False))"],
+        ["GeometryConfig.LODLevels.LODLevels[0]", "(RadialSegments=16,ScreenSize=1.000000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[0].RadialSegments", "16"],
+        ["GeometryConfig.LODLevels.LODLevels[0].ScreenSize", "1.000000"],
+        ["GeometryConfig.LODLevels.LODLevels[0].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[1]", "(RadialSegments=8,ScreenSize=0.500000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[1].RadialSegments", "8"],
+        ["GeometryConfig.LODLevels.LODLevels[1].ScreenSize", "0.500000"],
+        ["GeometryConfig.LODLevels.LODLevels[1].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[2]", "(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)"],
+        ["GeometryConfig.LODLevels.LODLevels[2].RadialSegments", "4"],
+        ["GeometryConfig.LODLevels.LODLevels[2].ScreenSize", "0.250000"],
+        ["GeometryConfig.LODLevels.LODLevels[2].bIncludeLeaves", "False"],
+        ["GeometryConfig.LeafSize", "(X=4.000000,Y=18.000000)"],
+        ["GeometryConfig.LeafSize.X", "4.000000"],
+        ["GeometryConfig.LeafSize.Y", "18.000000"],
+        ["GeometryConfig.LeafRandomRotation", "20.000000"],
+        ["GeometryConfig.bGenerateCollision", "True"],
+        ["GeometryConfig.BarkUVTiling", "0.800000"],
+        ["bGenerateOnStart", "True"],
+        ["BarkMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Bark/M_Bark.M_Bark'"],
+        ["LeafMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Leaves/M_Leaf.M_Leaf'"]
+    ]
+}
+```
 
 ---
 
-## Quick Copy-Paste for Editor
+## 4. Cherry Tree
 
-### Best Fruit Tree Setup:
+Ornamental tree with elegant spreading branches. Delicate structure with graceful upward-curving tips.
 
-**Axiom:** `FFFA`
+```json
+{
+    "Tagged": [
+        ["Axiom", "FFFA"],
+        ["Rules", "((Predecessor=\"A\",Successor=\"[&+B]////[&-B]////[&B]\"),(Predecessor=\"B\",Successor=\"F[--LL][++LL]FA\"),(Predecessor=\"F\",Successor=\"S\"),(Predecessor=\"S\",Successor=\"F\"))"],
+        ["Rules.Rules[0]", "(LeftContext=\"\",Predecessor=\"A\",RightContext=\"\",Successor=\"[&+B]////[&-B]////[&B]\",Probability=1.000000)"],
+        ["Rules.Rules[0].LeftContext", ""],
+        ["Rules.Rules[0].Predecessor", "A"],
+        ["Rules.Rules[0].RightContext", ""],
+        ["Rules.Rules[0].Successor", "[&+B]////[&-B]////[&B]"],
+        ["Rules.Rules[0].Probability", "1.000000"],
+        ["Rules.Rules[1]", "(LeftContext=\"\",Predecessor=\"B\",RightContext=\"\",Successor=\"F[--LL][++LL]FA\",Probability=1.000000)"],
+        ["Rules.Rules[1].LeftContext", ""],
+        ["Rules.Rules[1].Predecessor", "B"],
+        ["Rules.Rules[1].RightContext", ""],
+        ["Rules.Rules[1].Successor", "F[--LL][++LL]FA"],
+        ["Rules.Rules[1].Probability", "1.000000"],
+        ["Rules.Rules[2]", "(LeftContext=\"\",Predecessor=\"F\",RightContext=\"\",Successor=\"S\",Probability=1.000000)"],
+        ["Rules.Rules[2].LeftContext", ""],
+        ["Rules.Rules[2].Predecessor", "F"],
+        ["Rules.Rules[2].RightContext", ""],
+        ["Rules.Rules[2].Successor", "S"],
+        ["Rules.Rules[2].Probability", "1.000000"],
+        ["Rules.Rules[3]", "(LeftContext=\"\",Predecessor=\"S\",RightContext=\"\",Successor=\"F\",Probability=1.000000)"],
+        ["Rules.Rules[3].LeftContext", ""],
+        ["Rules.Rules[3].Predecessor", "S"],
+        ["Rules.Rules[3].RightContext", ""],
+        ["Rules.Rules[3].Successor", "F"],
+        ["Rules.Rules[3].Probability", "1.000000"],
+        ["Iterations", "11"],
+        ["RandomSeed", "1"],
+        ["bRandomizeSeed", "True"],
+        ["TurtleConfig", "(DefaultAngle=28.000000,PitchAngle=18.000000,RollAngle=120.000000,StepLength=18.000000,InitialWidth=6.000000,WidthFalloff=0.620000,MinWidth=0.350000,TropismStrength=0.060000,GravityVector=(X=0.000000,Y=0.000000,Z=-1.000000),InitialPosition=(X=0.000000,Y=0.000000,Z=0.000000),InitialForward=(X=0.000000,Y=0.000000,Z=1.000000),LeafSize=(X=8.000000,Y=10.000000),RandomSeed=1,BranchProbability=0.820000,AngleVariationMin=-12.000000,AngleVariationMax=12.000000,StepLengthVariation=0.100000,bRandomizePitchDirection=True,PitchFlipProbability=0.500000,PitchVariationMin=-18.000000,PitchVariationMax=18.000000,InitialRandomRoll=360.000000)"],
+        ["TurtleConfig.DefaultAngle", "28.000000"],
+        ["TurtleConfig.PitchAngle", "18.000000"],
+        ["TurtleConfig.RollAngle", "120.000000"],
+        ["TurtleConfig.StepLength", "18.000000"],
+        ["TurtleConfig.InitialWidth", "6.000000"],
+        ["TurtleConfig.WidthFalloff", "0.620000"],
+        ["TurtleConfig.MinWidth", "0.350000"],
+        ["TurtleConfig.TropismStrength", "0.060000"],
+        ["TurtleConfig.GravityVector", "(X=0.000000,Y=0.000000,Z=-1.000000)"],
+        ["TurtleConfig.GravityVector.X", "0.000000"],
+        ["TurtleConfig.GravityVector.Y", "0.000000"],
+        ["TurtleConfig.GravityVector.Z", "-1.000000"],
+        ["TurtleConfig.InitialPosition", "(X=0.000000,Y=0.000000,Z=0.000000)"],
+        ["TurtleConfig.InitialPosition.X", "0.000000"],
+        ["TurtleConfig.InitialPosition.Y", "0.000000"],
+        ["TurtleConfig.InitialPosition.Z", "0.000000"],
+        ["TurtleConfig.InitialForward", "(X=0.000000,Y=0.000000,Z=1.000000)"],
+        ["TurtleConfig.InitialForward.X", "0.000000"],
+        ["TurtleConfig.InitialForward.Y", "0.000000"],
+        ["TurtleConfig.InitialForward.Z", "1.000000"],
+        ["TurtleConfig.LeafSize", "(X=8.000000,Y=10.000000)"],
+        ["TurtleConfig.LeafSize.X", "8.000000"],
+        ["TurtleConfig.LeafSize.Y", "10.000000"],
+        ["TurtleConfig.RandomSeed", "1"],
+        ["TurtleConfig.BranchProbability", "0.820000"],
+        ["TurtleConfig.AngleVariationMin", "-12.000000"],
+        ["TurtleConfig.AngleVariationMax", "12.000000"],
+        ["TurtleConfig.StepLengthVariation", "0.100000"],
+        ["TurtleConfig.bRandomizePitchDirection", "True"],
+        ["TurtleConfig.PitchFlipProbability", "0.500000"],
+        ["TurtleConfig.PitchVariationMin", "-18.000000"],
+        ["TurtleConfig.PitchVariationMax", "18.000000"],
+        ["TurtleConfig.InitialRandomRoll", "360.000000"],
+        ["GeometryConfig", "(LODLevels=((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)),LeafSize=(X=8.000000,Y=10.000000),LeafRandomRotation=40.000000,bGenerateCollision=True,BarkUVTiling=1.000000)"],
+        ["GeometryConfig.LODLevels", "((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False))"],
+        ["GeometryConfig.LODLevels.LODLevels[0]", "(RadialSegments=16,ScreenSize=1.000000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[0].RadialSegments", "16"],
+        ["GeometryConfig.LODLevels.LODLevels[0].ScreenSize", "1.000000"],
+        ["GeometryConfig.LODLevels.LODLevels[0].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[1]", "(RadialSegments=8,ScreenSize=0.500000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[1].RadialSegments", "8"],
+        ["GeometryConfig.LODLevels.LODLevels[1].ScreenSize", "0.500000"],
+        ["GeometryConfig.LODLevels.LODLevels[1].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[2]", "(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)"],
+        ["GeometryConfig.LODLevels.LODLevels[2].RadialSegments", "4"],
+        ["GeometryConfig.LODLevels.LODLevels[2].ScreenSize", "0.250000"],
+        ["GeometryConfig.LODLevels.LODLevels[2].bIncludeLeaves", "False"],
+        ["GeometryConfig.LeafSize", "(X=8.000000,Y=10.000000)"],
+        ["GeometryConfig.LeafSize.X", "8.000000"],
+        ["GeometryConfig.LeafSize.Y", "10.000000"],
+        ["GeometryConfig.LeafRandomRotation", "40.000000"],
+        ["GeometryConfig.bGenerateCollision", "True"],
+        ["GeometryConfig.BarkUVTiling", "1.000000"],
+        ["bGenerateOnStart", "True"],
+        ["BarkMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Bark/M_Bark.M_Bark'"],
+        ["LeafMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Leaves/M_Leaf.M_Leaf'"]
+    ]
+}
+```
 
-**Rule 1:**
-- Predecessor: `A`
-- Successor: `[&B]////[&B]////[&B]`
+---
 
-**Rule 2:**
-- Predecessor: `B`
-- Successor: `F[--L][++L]FA`
+## 5. Apple Tree
 
-**Rule 3:**
-- Predecessor: `F`
-- Successor: `S`
+Classic fruit tree with rounded, spreading crown. Medium height with strong horizontal branching.
 
-**Rule 4:**
-- Predecessor: `S`
-- Successor: `F`
+```json
+{
+    "Tagged": [
+        ["Axiom", "FFFA"],
+        ["Rules", "((Predecessor=\"A\",Successor=\"[&B]////[&B]////[&B]\"),(Predecessor=\"B\",Successor=\"F[--L][++L]FA\"),(Predecessor=\"F\",Successor=\"S\"),(Predecessor=\"S\",Successor=\"F\"))"],
+        ["Rules.Rules[0]", "(LeftContext=\"\",Predecessor=\"A\",RightContext=\"\",Successor=\"[&B]////[&B]////[&B]\",Probability=1.000000)"],
+        ["Rules.Rules[0].LeftContext", ""],
+        ["Rules.Rules[0].Predecessor", "A"],
+        ["Rules.Rules[0].RightContext", ""],
+        ["Rules.Rules[0].Successor", "[&B]////[&B]////[&B]"],
+        ["Rules.Rules[0].Probability", "1.000000"],
+        ["Rules.Rules[1]", "(LeftContext=\"\",Predecessor=\"B\",RightContext=\"\",Successor=\"F[--L][++L]FA\",Probability=1.000000)"],
+        ["Rules.Rules[1].LeftContext", ""],
+        ["Rules.Rules[1].Predecessor", "B"],
+        ["Rules.Rules[1].RightContext", ""],
+        ["Rules.Rules[1].Successor", "F[--L][++L]FA"],
+        ["Rules.Rules[1].Probability", "1.000000"],
+        ["Rules.Rules[2]", "(LeftContext=\"\",Predecessor=\"F\",RightContext=\"\",Successor=\"S\",Probability=1.000000)"],
+        ["Rules.Rules[2].LeftContext", ""],
+        ["Rules.Rules[2].Predecessor", "F"],
+        ["Rules.Rules[2].RightContext", ""],
+        ["Rules.Rules[2].Successor", "S"],
+        ["Rules.Rules[2].Probability", "1.000000"],
+        ["Rules.Rules[3]", "(LeftContext=\"\",Predecessor=\"S\",RightContext=\"\",Successor=\"F\",Probability=1.000000)"],
+        ["Rules.Rules[3].LeftContext", ""],
+        ["Rules.Rules[3].Predecessor", "S"],
+        ["Rules.Rules[3].RightContext", ""],
+        ["Rules.Rules[3].Successor", "F"],
+        ["Rules.Rules[3].Probability", "1.000000"],
+        ["Iterations", "12"],
+        ["RandomSeed", "1"],
+        ["bRandomizeSeed", "True"],
+        ["TurtleConfig", "(DefaultAngle=25.000000,PitchAngle=12.000000,RollAngle=120.000000,StepLength=25.000000,InitialWidth=8.000000,WidthFalloff=0.600000,MinWidth=0.500000,TropismStrength=0.100000,GravityVector=(X=0.000000,Y=0.000000,Z=-1.000000),InitialPosition=(X=0.000000,Y=0.000000,Z=0.000000),InitialForward=(X=0.000000,Y=0.000000,Z=1.000000),LeafSize=(X=10.000000,Y=15.000000),RandomSeed=1,BranchProbability=0.750000,AngleVariationMin=-15.000000,AngleVariationMax=15.000000,StepLengthVariation=0.150000,bRandomizePitchDirection=True,PitchFlipProbability=0.450000,PitchVariationMin=-25.000000,PitchVariationMax=25.000000,InitialRandomRoll=360.000000)"],
+        ["TurtleConfig.DefaultAngle", "25.000000"],
+        ["TurtleConfig.PitchAngle", "12.000000"],
+        ["TurtleConfig.RollAngle", "120.000000"],
+        ["TurtleConfig.StepLength", "25.000000"],
+        ["TurtleConfig.InitialWidth", "8.000000"],
+        ["TurtleConfig.WidthFalloff", "0.600000"],
+        ["TurtleConfig.MinWidth", "0.500000"],
+        ["TurtleConfig.TropismStrength", "0.100000"],
+        ["TurtleConfig.GravityVector", "(X=0.000000,Y=0.000000,Z=-1.000000)"],
+        ["TurtleConfig.GravityVector.X", "0.000000"],
+        ["TurtleConfig.GravityVector.Y", "0.000000"],
+        ["TurtleConfig.GravityVector.Z", "-1.000000"],
+        ["TurtleConfig.InitialPosition", "(X=0.000000,Y=0.000000,Z=0.000000)"],
+        ["TurtleConfig.InitialPosition.X", "0.000000"],
+        ["TurtleConfig.InitialPosition.Y", "0.000000"],
+        ["TurtleConfig.InitialPosition.Z", "0.000000"],
+        ["TurtleConfig.InitialForward", "(X=0.000000,Y=0.000000,Z=1.000000)"],
+        ["TurtleConfig.InitialForward.X", "0.000000"],
+        ["TurtleConfig.InitialForward.Y", "0.000000"],
+        ["TurtleConfig.InitialForward.Z", "1.000000"],
+        ["TurtleConfig.LeafSize", "(X=10.000000,Y=15.000000)"],
+        ["TurtleConfig.LeafSize.X", "10.000000"],
+        ["TurtleConfig.LeafSize.Y", "15.000000"],
+        ["TurtleConfig.RandomSeed", "1"],
+        ["TurtleConfig.BranchProbability", "0.750000"],
+        ["TurtleConfig.AngleVariationMin", "-15.000000"],
+        ["TurtleConfig.AngleVariationMax", "15.000000"],
+        ["TurtleConfig.StepLengthVariation", "0.150000"],
+        ["TurtleConfig.bRandomizePitchDirection", "True"],
+        ["TurtleConfig.PitchFlipProbability", "0.450000"],
+        ["TurtleConfig.PitchVariationMin", "-25.000000"],
+        ["TurtleConfig.PitchVariationMax", "25.000000"],
+        ["TurtleConfig.InitialRandomRoll", "360.000000"],
+        ["GeometryConfig", "(LODLevels=((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)),LeafSize=(X=10.000000,Y=15.000000),LeafRandomRotation=45.000000,bGenerateCollision=True,BarkUVTiling=1.000000)"],
+        ["GeometryConfig.LODLevels", "((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False))"],
+        ["GeometryConfig.LODLevels.LODLevels[0]", "(RadialSegments=16,ScreenSize=1.000000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[0].RadialSegments", "16"],
+        ["GeometryConfig.LODLevels.LODLevels[0].ScreenSize", "1.000000"],
+        ["GeometryConfig.LODLevels.LODLevels[0].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[1]", "(RadialSegments=8,ScreenSize=0.500000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[1].RadialSegments", "8"],
+        ["GeometryConfig.LODLevels.LODLevels[1].ScreenSize", "0.500000"],
+        ["GeometryConfig.LODLevels.LODLevels[1].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[2]", "(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)"],
+        ["GeometryConfig.LODLevels.LODLevels[2].RadialSegments", "4"],
+        ["GeometryConfig.LODLevels.LODLevels[2].ScreenSize", "0.250000"],
+        ["GeometryConfig.LODLevels.LODLevels[2].bIncludeLeaves", "False"],
+        ["GeometryConfig.LeafSize", "(X=10.000000,Y=15.000000)"],
+        ["GeometryConfig.LeafSize.X", "10.000000"],
+        ["GeometryConfig.LeafSize.Y", "15.000000"],
+        ["GeometryConfig.LeafRandomRotation", "45.000000"],
+        ["GeometryConfig.bGenerateCollision", "True"],
+        ["GeometryConfig.BarkUVTiling", "1.000000"],
+        ["bGenerateOnStart", "True"],
+        ["BarkMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Bark/M_Bark.M_Bark'"],
+        ["LeafMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Leaves/M_Leaf.M_Leaf'"]
+    ]
+}
+```
 
-**Turtle Config:**
-- Default Angle: 22
-- Pitch Angle: 35
-- Roll Angle: 120
-- Step Length: 12
-- Initial Width: 6
-- Width Falloff: 0.62
-- Angle Variation Min: -8
-- Angle Variation Max: 8
-- Branch Probability: 0.88
-- Tropism Strength: 0.05
+---
+
+## 6. Pear Tree
+
+Upright, pyramidal tree with strong central leader. Branches angle upward creating classic pear shape.
+
+```json
+{
+    "Tagged": [
+        ["Axiom", "FFFFA"],
+        ["Rules", "((Predecessor=\"A\",Successor=\"[^&B]/////[^&B]/////[^&B]\"),(Predecessor=\"B\",Successor=\"F[--L][++L]A\"),(Predecessor=\"F\",Successor=\"S\"),(Predecessor=\"S\",Successor=\"FF\"))"],
+        ["Rules.Rules[0]", "(LeftContext=\"\",Predecessor=\"A\",RightContext=\"\",Successor=\"[^&B]/////[^&B]/////[^&B]\",Probability=1.000000)"],
+        ["Rules.Rules[0].LeftContext", ""],
+        ["Rules.Rules[0].Predecessor", "A"],
+        ["Rules.Rules[0].RightContext", ""],
+        ["Rules.Rules[0].Successor", "[^&B]/////[^&B]/////[^&B]"],
+        ["Rules.Rules[0].Probability", "1.000000"],
+        ["Rules.Rules[1]", "(LeftContext=\"\",Predecessor=\"B\",RightContext=\"\",Successor=\"F[--L][++L]A\",Probability=1.000000)"],
+        ["Rules.Rules[1].LeftContext", ""],
+        ["Rules.Rules[1].Predecessor", "B"],
+        ["Rules.Rules[1].RightContext", ""],
+        ["Rules.Rules[1].Successor", "F[--L][++L]A"],
+        ["Rules.Rules[1].Probability", "1.000000"],
+        ["Rules.Rules[2]", "(LeftContext=\"\",Predecessor=\"F\",RightContext=\"\",Successor=\"S\",Probability=1.000000)"],
+        ["Rules.Rules[2].LeftContext", ""],
+        ["Rules.Rules[2].Predecessor", "F"],
+        ["Rules.Rules[2].RightContext", ""],
+        ["Rules.Rules[2].Successor", "S"],
+        ["Rules.Rules[2].Probability", "1.000000"],
+        ["Rules.Rules[3]", "(LeftContext=\"\",Predecessor=\"S\",RightContext=\"\",Successor=\"FF\",Probability=1.000000)"],
+        ["Rules.Rules[3].LeftContext", ""],
+        ["Rules.Rules[3].Predecessor", "S"],
+        ["Rules.Rules[3].RightContext", ""],
+        ["Rules.Rules[3].Successor", "FF"],
+        ["Rules.Rules[3].Probability", "1.000000"],
+        ["Iterations", "10"],
+        ["RandomSeed", "1"],
+        ["bRandomizeSeed", "True"],
+        ["TurtleConfig", "(DefaultAngle=22.000000,PitchAngle=25.000000,RollAngle=72.000000,StepLength=28.000000,InitialWidth=7.000000,WidthFalloff=0.640000,MinWidth=0.400000,TropismStrength=0.030000,GravityVector=(X=0.000000,Y=0.000000,Z=-1.000000),InitialPosition=(X=0.000000,Y=0.000000,Z=0.000000),InitialForward=(X=0.000000,Y=0.000000,Z=1.000000),LeafSize=(X=9.000000,Y=12.000000),RandomSeed=1,BranchProbability=0.780000,AngleVariationMin=-10.000000,AngleVariationMax=10.000000,StepLengthVariation=0.100000,bRandomizePitchDirection=True,PitchFlipProbability=0.350000,PitchVariationMin=-15.000000,PitchVariationMax=15.000000,InitialRandomRoll=360.000000)"],
+        ["TurtleConfig.DefaultAngle", "22.000000"],
+        ["TurtleConfig.PitchAngle", "25.000000"],
+        ["TurtleConfig.RollAngle", "72.000000"],
+        ["TurtleConfig.StepLength", "28.000000"],
+        ["TurtleConfig.InitialWidth", "7.000000"],
+        ["TurtleConfig.WidthFalloff", "0.640000"],
+        ["TurtleConfig.MinWidth", "0.400000"],
+        ["TurtleConfig.TropismStrength", "0.030000"],
+        ["TurtleConfig.GravityVector", "(X=0.000000,Y=0.000000,Z=-1.000000)"],
+        ["TurtleConfig.GravityVector.X", "0.000000"],
+        ["TurtleConfig.GravityVector.Y", "0.000000"],
+        ["TurtleConfig.GravityVector.Z", "-1.000000"],
+        ["TurtleConfig.InitialPosition", "(X=0.000000,Y=0.000000,Z=0.000000)"],
+        ["TurtleConfig.InitialPosition.X", "0.000000"],
+        ["TurtleConfig.InitialPosition.Y", "0.000000"],
+        ["TurtleConfig.InitialPosition.Z", "0.000000"],
+        ["TurtleConfig.InitialForward", "(X=0.000000,Y=0.000000,Z=1.000000)"],
+        ["TurtleConfig.InitialForward.X", "0.000000"],
+        ["TurtleConfig.InitialForward.Y", "0.000000"],
+        ["TurtleConfig.InitialForward.Z", "1.000000"],
+        ["TurtleConfig.LeafSize", "(X=9.000000,Y=12.000000)"],
+        ["TurtleConfig.LeafSize.X", "9.000000"],
+        ["TurtleConfig.LeafSize.Y", "12.000000"],
+        ["TurtleConfig.RandomSeed", "1"],
+        ["TurtleConfig.BranchProbability", "0.780000"],
+        ["TurtleConfig.AngleVariationMin", "-10.000000"],
+        ["TurtleConfig.AngleVariationMax", "10.000000"],
+        ["TurtleConfig.StepLengthVariation", "0.100000"],
+        ["TurtleConfig.bRandomizePitchDirection", "True"],
+        ["TurtleConfig.PitchFlipProbability", "0.350000"],
+        ["TurtleConfig.PitchVariationMin", "-15.000000"],
+        ["TurtleConfig.PitchVariationMax", "15.000000"],
+        ["TurtleConfig.InitialRandomRoll", "360.000000"],
+        ["GeometryConfig", "(LODLevels=((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)),LeafSize=(X=9.000000,Y=12.000000),LeafRandomRotation=35.000000,bGenerateCollision=True,BarkUVTiling=1.000000)"],
+        ["GeometryConfig.LODLevels", "((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False))"],
+        ["GeometryConfig.LODLevels.LODLevels[0]", "(RadialSegments=16,ScreenSize=1.000000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[0].RadialSegments", "16"],
+        ["GeometryConfig.LODLevels.LODLevels[0].ScreenSize", "1.000000"],
+        ["GeometryConfig.LODLevels.LODLevels[0].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[1]", "(RadialSegments=8,ScreenSize=0.500000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[1].RadialSegments", "8"],
+        ["GeometryConfig.LODLevels.LODLevels[1].ScreenSize", "0.500000"],
+        ["GeometryConfig.LODLevels.LODLevels[1].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[2]", "(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)"],
+        ["GeometryConfig.LODLevels.LODLevels[2].RadialSegments", "4"],
+        ["GeometryConfig.LODLevels.LODLevels[2].ScreenSize", "0.250000"],
+        ["GeometryConfig.LODLevels.LODLevels[2].bIncludeLeaves", "False"],
+        ["GeometryConfig.LeafSize", "(X=9.000000,Y=12.000000)"],
+        ["GeometryConfig.LeafSize.X", "9.000000"],
+        ["GeometryConfig.LeafSize.Y", "12.000000"],
+        ["GeometryConfig.LeafRandomRotation", "35.000000"],
+        ["GeometryConfig.bGenerateCollision", "True"],
+        ["GeometryConfig.BarkUVTiling", "1.000000"],
+        ["bGenerateOnStart", "True"],
+        ["BarkMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Bark/M_Bark.M_Bark'"],
+        ["LeafMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Leaves/M_Leaf.M_Leaf'"]
+    ]
+}
+```
+
+---
+
+## 7. Plum Tree
+
+Compact, dense tree similar to cherry but with tighter branching. Rounded, bushy appearance.
+
+```json
+{
+    "Tagged": [
+        ["Axiom", "FFA"],
+        ["Rules", "((Predecessor=\"A\",Successor=\"[&+B]///[&-B]///[&B]///[&B]\"),(Predecessor=\"B\",Successor=\"F[-L][+L]FA\"),(Predecessor=\"F\",Successor=\"S\"),(Predecessor=\"S\",Successor=\"F\"))"],
+        ["Rules.Rules[0]", "(LeftContext=\"\",Predecessor=\"A\",RightContext=\"\",Successor=\"[&+B]///[&-B]///[&B]///[&B]\",Probability=1.000000)"],
+        ["Rules.Rules[0].LeftContext", ""],
+        ["Rules.Rules[0].Predecessor", "A"],
+        ["Rules.Rules[0].RightContext", ""],
+        ["Rules.Rules[0].Successor", "[&+B]///[&-B]///[&B]///[&B]"],
+        ["Rules.Rules[0].Probability", "1.000000"],
+        ["Rules.Rules[1]", "(LeftContext=\"\",Predecessor=\"B\",RightContext=\"\",Successor=\"F[-L][+L]FA\",Probability=1.000000)"],
+        ["Rules.Rules[1].LeftContext", ""],
+        ["Rules.Rules[1].Predecessor", "B"],
+        ["Rules.Rules[1].RightContext", ""],
+        ["Rules.Rules[1].Successor", "F[-L][+L]FA"],
+        ["Rules.Rules[1].Probability", "1.000000"],
+        ["Rules.Rules[2]", "(LeftContext=\"\",Predecessor=\"F\",RightContext=\"\",Successor=\"S\",Probability=1.000000)"],
+        ["Rules.Rules[2].LeftContext", ""],
+        ["Rules.Rules[2].Predecessor", "F"],
+        ["Rules.Rules[2].RightContext", ""],
+        ["Rules.Rules[2].Successor", "S"],
+        ["Rules.Rules[2].Probability", "1.000000"],
+        ["Rules.Rules[3]", "(LeftContext=\"\",Predecessor=\"S\",RightContext=\"\",Successor=\"F\",Probability=1.000000)"],
+        ["Rules.Rules[3].LeftContext", ""],
+        ["Rules.Rules[3].Predecessor", "S"],
+        ["Rules.Rules[3].RightContext", ""],
+        ["Rules.Rules[3].Successor", "F"],
+        ["Rules.Rules[3].Probability", "1.000000"],
+        ["Iterations", "11"],
+        ["RandomSeed", "1"],
+        ["bRandomizeSeed", "True"],
+        ["TurtleConfig", "(DefaultAngle=32.000000,PitchAngle=15.000000,RollAngle=90.000000,StepLength=16.000000,InitialWidth=5.500000,WidthFalloff=0.600000,MinWidth=0.350000,TropismStrength=0.070000,GravityVector=(X=0.000000,Y=0.000000,Z=-1.000000),InitialPosition=(X=0.000000,Y=0.000000,Z=0.000000),InitialForward=(X=0.000000,Y=0.000000,Z=1.000000),LeafSize=(X=7.000000,Y=9.000000),RandomSeed=1,BranchProbability=0.850000,AngleVariationMin=-14.000000,AngleVariationMax=14.000000,StepLengthVariation=0.120000,bRandomizePitchDirection=True,PitchFlipProbability=0.480000,PitchVariationMin=-20.000000,PitchVariationMax=20.000000,InitialRandomRoll=360.000000)"],
+        ["TurtleConfig.DefaultAngle", "32.000000"],
+        ["TurtleConfig.PitchAngle", "15.000000"],
+        ["TurtleConfig.RollAngle", "90.000000"],
+        ["TurtleConfig.StepLength", "16.000000"],
+        ["TurtleConfig.InitialWidth", "5.500000"],
+        ["TurtleConfig.WidthFalloff", "0.600000"],
+        ["TurtleConfig.MinWidth", "0.350000"],
+        ["TurtleConfig.TropismStrength", "0.070000"],
+        ["TurtleConfig.GravityVector", "(X=0.000000,Y=0.000000,Z=-1.000000)"],
+        ["TurtleConfig.GravityVector.X", "0.000000"],
+        ["TurtleConfig.GravityVector.Y", "0.000000"],
+        ["TurtleConfig.GravityVector.Z", "-1.000000"],
+        ["TurtleConfig.InitialPosition", "(X=0.000000,Y=0.000000,Z=0.000000)"],
+        ["TurtleConfig.InitialPosition.X", "0.000000"],
+        ["TurtleConfig.InitialPosition.Y", "0.000000"],
+        ["TurtleConfig.InitialPosition.Z", "0.000000"],
+        ["TurtleConfig.InitialForward", "(X=0.000000,Y=0.000000,Z=1.000000)"],
+        ["TurtleConfig.InitialForward.X", "0.000000"],
+        ["TurtleConfig.InitialForward.Y", "0.000000"],
+        ["TurtleConfig.InitialForward.Z", "1.000000"],
+        ["TurtleConfig.LeafSize", "(X=7.000000,Y=9.000000)"],
+        ["TurtleConfig.LeafSize.X", "7.000000"],
+        ["TurtleConfig.LeafSize.Y", "9.000000"],
+        ["TurtleConfig.RandomSeed", "1"],
+        ["TurtleConfig.BranchProbability", "0.850000"],
+        ["TurtleConfig.AngleVariationMin", "-14.000000"],
+        ["TurtleConfig.AngleVariationMax", "14.000000"],
+        ["TurtleConfig.StepLengthVariation", "0.120000"],
+        ["TurtleConfig.bRandomizePitchDirection", "True"],
+        ["TurtleConfig.PitchFlipProbability", "0.480000"],
+        ["TurtleConfig.PitchVariationMin", "-20.000000"],
+        ["TurtleConfig.PitchVariationMax", "20.000000"],
+        ["TurtleConfig.InitialRandomRoll", "360.000000"],
+        ["GeometryConfig", "(LODLevels=((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)),LeafSize=(X=7.000000,Y=9.000000),LeafRandomRotation=50.000000,bGenerateCollision=True,BarkUVTiling=1.100000)"],
+        ["GeometryConfig.LODLevels", "((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False))"],
+        ["GeometryConfig.LODLevels.LODLevels[0]", "(RadialSegments=16,ScreenSize=1.000000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[0].RadialSegments", "16"],
+        ["GeometryConfig.LODLevels.LODLevels[0].ScreenSize", "1.000000"],
+        ["GeometryConfig.LODLevels.LODLevels[0].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[1]", "(RadialSegments=8,ScreenSize=0.500000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[1].RadialSegments", "8"],
+        ["GeometryConfig.LODLevels.LODLevels[1].ScreenSize", "0.500000"],
+        ["GeometryConfig.LODLevels.LODLevels[1].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[2]", "(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)"],
+        ["GeometryConfig.LODLevels.LODLevels[2].RadialSegments", "4"],
+        ["GeometryConfig.LODLevels.LODLevels[2].ScreenSize", "0.250000"],
+        ["GeometryConfig.LODLevels.LODLevels[2].bIncludeLeaves", "False"],
+        ["GeometryConfig.LeafSize", "(X=7.000000,Y=9.000000)"],
+        ["GeometryConfig.LeafSize.X", "7.000000"],
+        ["GeometryConfig.LeafSize.Y", "9.000000"],
+        ["GeometryConfig.LeafRandomRotation", "50.000000"],
+        ["GeometryConfig.bGenerateCollision", "True"],
+        ["GeometryConfig.BarkUVTiling", "1.100000"],
+        ["bGenerateOnStart", "True"],
+        ["BarkMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Bark/M_Bark.M_Bark'"],
+        ["LeafMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Leaves/M_Leaf.M_Leaf'"]
+    ]
+}
+```
+
+---
+
+## 8. Peach Tree
+
+Open, spreading crown with graceful arching branches. Similar to cherry but with wider branch angles.
+
+```json
+{
+    "Tagged": [
+        ["Axiom", "FFFA"],
+        ["Rules", "((Predecessor=\"A\",Successor=\"[&&+B]////[&&-B]////[&&B]\"),(Predecessor=\"B\",Successor=\"F[--L][++L]FA\"),(Predecessor=\"F\",Successor=\"S\"),(Predecessor=\"S\",Successor=\"F\"))"],
+        ["Rules.Rules[0]", "(LeftContext=\"\",Predecessor=\"A\",RightContext=\"\",Successor=\"[&&+B]////[&&-B]////[&&B]\",Probability=1.000000)"],
+        ["Rules.Rules[0].LeftContext", ""],
+        ["Rules.Rules[0].Predecessor", "A"],
+        ["Rules.Rules[0].RightContext", ""],
+        ["Rules.Rules[0].Successor", "[&&+B]////[&&-B]////[&&B]"],
+        ["Rules.Rules[0].Probability", "1.000000"],
+        ["Rules.Rules[1]", "(LeftContext=\"\",Predecessor=\"B\",RightContext=\"\",Successor=\"F[--L][++L]FA\",Probability=1.000000)"],
+        ["Rules.Rules[1].LeftContext", ""],
+        ["Rules.Rules[1].Predecessor", "B"],
+        ["Rules.Rules[1].RightContext", ""],
+        ["Rules.Rules[1].Successor", "F[--L][++L]FA"],
+        ["Rules.Rules[1].Probability", "1.000000"],
+        ["Rules.Rules[2]", "(LeftContext=\"\",Predecessor=\"F\",RightContext=\"\",Successor=\"S\",Probability=1.000000)"],
+        ["Rules.Rules[2].LeftContext", ""],
+        ["Rules.Rules[2].Predecessor", "F"],
+        ["Rules.Rules[2].RightContext", ""],
+        ["Rules.Rules[2].Successor", "S"],
+        ["Rules.Rules[2].Probability", "1.000000"],
+        ["Rules.Rules[3]", "(LeftContext=\"\",Predecessor=\"S\",RightContext=\"\",Successor=\"F\",Probability=1.000000)"],
+        ["Rules.Rules[3].LeftContext", ""],
+        ["Rules.Rules[3].Predecessor", "S"],
+        ["Rules.Rules[3].RightContext", ""],
+        ["Rules.Rules[3].Successor", "F"],
+        ["Rules.Rules[3].Probability", "1.000000"],
+        ["Iterations", "11"],
+        ["RandomSeed", "1"],
+        ["bRandomizeSeed", "True"],
+        ["TurtleConfig", "(DefaultAngle=30.000000,PitchAngle=22.000000,RollAngle=120.000000,StepLength=20.000000,InitialWidth=6.000000,WidthFalloff=0.610000,MinWidth=0.350000,TropismStrength=0.090000,GravityVector=(X=0.000000,Y=0.000000,Z=-1.000000),InitialPosition=(X=0.000000,Y=0.000000,Z=0.000000),InitialForward=(X=0.000000,Y=0.000000,Z=1.000000),LeafSize=(X=8.000000,Y=12.000000),RandomSeed=1,BranchProbability=0.800000,AngleVariationMin=-15.000000,AngleVariationMax=15.000000,StepLengthVariation=0.130000,bRandomizePitchDirection=True,PitchFlipProbability=0.400000,PitchVariationMin=-18.000000,PitchVariationMax=18.000000,InitialRandomRoll=360.000000)"],
+        ["TurtleConfig.DefaultAngle", "30.000000"],
+        ["TurtleConfig.PitchAngle", "22.000000"],
+        ["TurtleConfig.RollAngle", "120.000000"],
+        ["TurtleConfig.StepLength", "20.000000"],
+        ["TurtleConfig.InitialWidth", "6.000000"],
+        ["TurtleConfig.WidthFalloff", "0.610000"],
+        ["TurtleConfig.MinWidth", "0.350000"],
+        ["TurtleConfig.TropismStrength", "0.090000"],
+        ["TurtleConfig.GravityVector", "(X=0.000000,Y=0.000000,Z=-1.000000)"],
+        ["TurtleConfig.GravityVector.X", "0.000000"],
+        ["TurtleConfig.GravityVector.Y", "0.000000"],
+        ["TurtleConfig.GravityVector.Z", "-1.000000"],
+        ["TurtleConfig.InitialPosition", "(X=0.000000,Y=0.000000,Z=0.000000)"],
+        ["TurtleConfig.InitialPosition.X", "0.000000"],
+        ["TurtleConfig.InitialPosition.Y", "0.000000"],
+        ["TurtleConfig.InitialPosition.Z", "0.000000"],
+        ["TurtleConfig.InitialForward", "(X=0.000000,Y=0.000000,Z=1.000000)"],
+        ["TurtleConfig.InitialForward.X", "0.000000"],
+        ["TurtleConfig.InitialForward.Y", "0.000000"],
+        ["TurtleConfig.InitialForward.Z", "1.000000"],
+        ["TurtleConfig.LeafSize", "(X=8.000000,Y=12.000000)"],
+        ["TurtleConfig.LeafSize.X", "8.000000"],
+        ["TurtleConfig.LeafSize.Y", "12.000000"],
+        ["TurtleConfig.RandomSeed", "1"],
+        ["TurtleConfig.BranchProbability", "0.800000"],
+        ["TurtleConfig.AngleVariationMin", "-15.000000"],
+        ["TurtleConfig.AngleVariationMax", "15.000000"],
+        ["TurtleConfig.StepLengthVariation", "0.130000"],
+        ["TurtleConfig.bRandomizePitchDirection", "True"],
+        ["TurtleConfig.PitchFlipProbability", "0.400000"],
+        ["TurtleConfig.PitchVariationMin", "-18.000000"],
+        ["TurtleConfig.PitchVariationMax", "18.000000"],
+        ["TurtleConfig.InitialRandomRoll", "360.000000"],
+        ["GeometryConfig", "(LODLevels=((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)),LeafSize=(X=8.000000,Y=12.000000),LeafRandomRotation=45.000000,bGenerateCollision=True,BarkUVTiling=1.000000)"],
+        ["GeometryConfig.LODLevels", "((RadialSegments=16,ScreenSize=1.000000),(),(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False))"],
+        ["GeometryConfig.LODLevels.LODLevels[0]", "(RadialSegments=16,ScreenSize=1.000000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[0].RadialSegments", "16"],
+        ["GeometryConfig.LODLevels.LODLevels[0].ScreenSize", "1.000000"],
+        ["GeometryConfig.LODLevels.LODLevels[0].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[1]", "(RadialSegments=8,ScreenSize=0.500000,bIncludeLeaves=True)"],
+        ["GeometryConfig.LODLevels.LODLevels[1].RadialSegments", "8"],
+        ["GeometryConfig.LODLevels.LODLevels[1].ScreenSize", "0.500000"],
+        ["GeometryConfig.LODLevels.LODLevels[1].bIncludeLeaves", "True"],
+        ["GeometryConfig.LODLevels.LODLevels[2]", "(RadialSegments=4,ScreenSize=0.250000,bIncludeLeaves=False)"],
+        ["GeometryConfig.LODLevels.LODLevels[2].RadialSegments", "4"],
+        ["GeometryConfig.LODLevels.LODLevels[2].ScreenSize", "0.250000"],
+        ["GeometryConfig.LODLevels.LODLevels[2].bIncludeLeaves", "False"],
+        ["GeometryConfig.LeafSize", "(X=8.000000,Y=12.000000)"],
+        ["GeometryConfig.LeafSize.X", "8.000000"],
+        ["GeometryConfig.LeafSize.Y", "12.000000"],
+        ["GeometryConfig.LeafRandomRotation", "45.000000"],
+        ["GeometryConfig.bGenerateCollision", "True"],
+        ["GeometryConfig.BarkUVTiling", "1.000000"],
+        ["bGenerateOnStart", "True"],
+        ["BarkMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Bark/M_Bark.M_Bark'"],
+        ["LeafMaterial", "/Script/Engine.Material'/LSystemTrees/Materials/Leaves/M_Leaf.M_Leaf'"]
+    ]
+}
+```
+
+---
+
+## Quick Comparison Table
+
+| Tree | Key Characteristics | Iterations | Tropism | Branch Prob |
+|------|---------------------|------------|---------|-------------|
+| Birch | Tall, slender, upward | 10 | 0.02 | 0.85 |
+| Oak | Wide, massive, spreading | 10 | 0.08 | 0.80 |
+| Willow | Weeping, drooping | 11 | 0.25 | 0.90 |
+| Cherry | Elegant, spreading | 11 | 0.06 | 0.82 |
+| Apple | Rounded crown | 12 | 0.10 | 0.75 |
+| Pear | Upright, pyramidal | 10 | 0.03 | 0.78 |
+| Plum | Compact, dense | 11 | 0.07 | 0.85 |
+| Peach | Open, arching | 11 | 0.09 | 0.80 |
