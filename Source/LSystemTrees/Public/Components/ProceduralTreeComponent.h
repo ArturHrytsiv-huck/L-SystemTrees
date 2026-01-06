@@ -279,16 +279,16 @@ private:
 	// Internal State
 	// ========================================================================
 
-	/** L-System generator instance */
-	UPROPERTY()
+	/** L-System generator instance (transient - recreated at runtime) */
+	UPROPERTY(Transient)
 	ULSystemGenerator* Generator;
 
-	/** Turtle interpreter instance */
-	UPROPERTY()
+	/** Turtle interpreter instance (transient - recreated at runtime) */
+	UPROPERTY(Transient)
 	UTurtleInterpreter* Interpreter;
 
-	/** Geometry builder instance */
-	UPROPERTY()
+	/** Geometry builder instance (transient - recreated at runtime) */
+	UPROPERTY(Transient)
 	UTreeGeometry* GeometryBuilder;
 
 	/** Cached LOD mesh data */
