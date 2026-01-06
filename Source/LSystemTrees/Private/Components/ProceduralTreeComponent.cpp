@@ -17,7 +17,7 @@ UProceduralTreeComponent::UProceduralTreeComponent(const FObjectInitializer& Obj
 	, Axiom(TEXT("F"))
 	, Iterations(4)
 	, RandomSeed(0)
-	, bUseLocationBasedSeed(true)
+	, bRandomizeSeed(true)
 	, bGenerateOnStart(false)
 	, BarkMaterial(nullptr)
 	, LeafMaterial(nullptr)
@@ -75,7 +75,7 @@ void UProceduralTreeComponent::PostEditChangeProperty(FPropertyChangedEvent& Pro
 			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, Rules),
 			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, Iterations),
 			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, RandomSeed),
-			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, bUseLocationBasedSeed),
+			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, bRandomizeSeed),
 			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, TurtleConfig),
 			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, GeometryConfig),
 			GET_MEMBER_NAME_CHECKED(UProceduralTreeComponent, LODLevels)
@@ -121,20 +121,11 @@ void UProceduralTreeComponent::GenerateTree()
 
 	// Compute effective random seed
 	int32 EffectiveSeed = RandomSeed;
-	if (bUseLocationBasedSeed)
+	if (bRandomizeSeed)
 	{
-		// Generate unique seed from world location
-		// This ensures trees at different positions look different
-		const FVector WorldLocation = GetComponentLocation();
-
-		// Hash the location components to create a seed
-		// Multiply by primes and cast to int for good distribution
-		const int32 X = FMath::FloorToInt(WorldLocation.X * 0.1f);
-		const int32 Y = FMath::FloorToInt(WorldLocation.Y * 0.1f);
-		const int32 Z = FMath::FloorToInt(WorldLocation.Z * 0.1f);
-
-		// Combine using prime multipliers for better distribution
-		EffectiveSeed = X * 73856093 ^ Y * 19349663 ^ Z * 83492791;
+		// Generate a truly random seed using FMath::Rand()
+		// This ensures every tree is unique, even at the same location
+		EffectiveSeed = FMath::Rand();
 
 		// Ensure non-zero seed
 		if (EffectiveSeed == 0)
@@ -142,8 +133,7 @@ void UProceduralTreeComponent::GenerateTree()
 			EffectiveSeed = 1;
 		}
 
-		UE_LOG(LogTemp, Verbose, TEXT("ProceduralTreeComponent: Location-based seed: %d (from %.1f, %.1f, %.1f)"),
-		       EffectiveSeed, WorldLocation.X, WorldLocation.Y, WorldLocation.Z);
+		UE_LOG(LogTemp, Verbose, TEXT("ProceduralTreeComponent: Random seed: %d"), EffectiveSeed);
 	}
 
 	// Report progress: Step 1 - L-System Generation
